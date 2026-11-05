@@ -1,0 +1,67 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.khasi.jaintia.calendar'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.khasi.jaintia.calendar"
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // Digital Asset Links & Web URL configuration
+        resValue "string", "app_name", "Khasi Jaintia Calendar"
+        resValue "string", "package_name", "com.khasi.jaintia.calendar"
+        resValue "string", "host_name", "ais-pre-ifskr2gibimdmh23zskyjq-536277912342.asia-east1.run.app"
+        resValue "string", "default_url", "https://ais-pre-ifskr2gibimdmh23zskyjq-536277912342.asia-east1.run.app/"
+        resValue "string", "asset_statements", """
+            [{
+                "relation": ["delegate_permission/common.handle_all_urls"],
+                "target": {
+                    "namespace": "web",
+                    "site": "https://ais-pre-ifskr2gibimdmh23zskyjq-536277912342.asia-east1.run.app"
+                }
+            }]
+        """
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug // Replace with your production release keystore in Play Console
+        }
+        debug {
+            applicationIdSuffix ".debug"
+            debuggable true
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    
+    // Google Official Android Browser Helper (Trusted Web Activity)
+    implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.5.0'
+    
+    // Google Play Billing v6 Integration
+    implementation 'com.android.billingclient:billing:6.2.1'
+    implementation 'com.google.androidbrowserhelper:billing:1.0.0-alpha11'
+
+    // AndroidX Support & Material
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'com.google.android.material:material:1.11.0'
+}

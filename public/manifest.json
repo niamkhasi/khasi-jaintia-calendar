@@ -1,0 +1,39 @@
+{
+  "name": "Khasi Jaintia Calendar",
+  "short_name": "Khasi Calendar",
+  "description": "Traditional Khasi Jaintia Calendar with 8-day week and 13 months of 28 days, Khasi culture and moon cycle weekly markets",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "fullscreen", "window-controls-overlay"],
+  "orientation": "portrait",
+  "background_color": "#0e2a3a",
+  "theme_color": "#0e2a3a",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

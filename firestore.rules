@@ -1,0 +1,133 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net: Default-deny all undefined paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        (request.auth.token.keys().hasAny(['email']) && (
+          request.auth.token.email.lower() == "muniphawa@gmail.com" ||
+          request.auth.token.email.lower() == "niamkhasi@gmail.com"
+        )) ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isOwner() {
+      return isSignedIn() && (
+        (existing().keys().hasAny(['userId']) && existing().userId == request.auth.uid) ||
+        (existing().keys().hasAny(['userEmail']) && request.auth.token.keys().hasAny(['email']) &&
+         existing().userEmail.lower() == request.auth.token.email.lower())
+      );
+    }
+
+    // Validation for all_holidays (paid slots)
+    function isValidAllHoliday(data) {
+      return data.title is string && data.title.size() > 0 && data.title.size() <= 120 &&
+             data.date is string && data.date.size() == 10 && data.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$') &&
+             data.type is string && (data.type == 'temp' || data.type == 'perm') &&
+             data.userEmail is string && data.userEmail.size() > 0 && data.userEmail.size() <= 128 &&
+             data.status is string && (data.status == 'active' || data.status == 'expired' || data.status == 'deleted') &&
+             (!('expiryDate' in data) || (data.expiryDate is string && data.expiryDate.size() <= 64)) &&
+             (!('userId' in data) || (data.userId is string && data.userId.size() <= 128)) &&
+             (!('orderId' in data) || (data.orderId is string && data.orderId.size() <= 128)) &&
+             (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 64)) &&
+             (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64));
+    }
+
+    // Validation for reports
+    function isValidReport(data) {
+      return data.holidayId is string && data.holidayId.size() > 0 && data.holidayId.size() <= 128 &&
+             data.reason is string && data.reason.size() >= 3 && data.reason.size() <= 500 &&
+             data.reporterEmail is string && data.reporterEmail.size() > 0 && data.reporterEmail.size() <= 128 &&
+             (!('holidayTitle' in data) || (data.holidayTitle is string && data.holidayTitle.size() <= 120)) &&
+             (!('status' in data) || (data.status is string && data.status.size() <= 32));
+    }
+
+    // Validation for custom holidays (existing)
+    function isValidCustomHoliday(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             (!('khasiName' in data) || (data.khasiName is string && data.khasiName.size() <= 100)) &&
+             data.day is int && data.day >= 1 && data.day <= 31 &&
+             data.month is int && data.month >= 0 && data.month <= 11 &&
+             data.year is int && data.year >= 0 && data.year <= 2100 &&
+             data.type is string && (data.type == 'cultural' || data.type == 'state' || data.type == 'religious' || data.type == 'national') &&
+             (!('description' in data) || (data.description is string && data.description.size() <= 500)) &&
+             (!('wishKhasi' in data) || (data.wishKhasi is string && data.wishKhasi.size() <= 300)) &&
+             (!('wishEnglish' in data) || (data.wishEnglish is string && data.wishEnglish.size() <= 300)) &&
+             data.createdBy is string && data.createdBy == request.auth.uid;
+    }
+
+    // Collection: all_holidays (paid consumable holidays & admin additions)
+    // Public read: so all calendar users see live holiday dates
+    // Create: Any signed-in user with valid payload (or admin)
+    // Update: Admin anytime OR Owner (purchaser) to edit holiday name
+    // Delete: Admin anytime (muniphawa@gmail.com & niamkhasi@gmail.com) OR Owner anytime
+    match /all_holidays/{holidayId} {
+      allow read: if true;
+      allow create: if isSignedIn() && isValidId(holidayId) && isValidAllHoliday(incoming());
+      allow update: if isSignedIn() && isValidId(holidayId) && isValidAllHoliday(incoming()) && (
+        isAdmin() || (
+          isOwner() &&
+          incoming().userId == existing().userId &&
+          incoming().userEmail == existing().userEmail
+        )
+      );
+      allow delete: if isSignedIn() && isValidId(holidayId) && (isAdmin() || isOwner());
+    }
+
+    // Collection: deleted_holidays (hidden or removed holidays by admins)
+    match /deleted_holidays/{holidayId} {
+      allow read: if true;
+      allow create, update, delete: if isSignedIn() && isAdmin() && isValidId(holidayId);
+    }
+
+    // Collection: reports (Customer Care / complaints / bad holidays)
+    match /reports/{reportId} {
+      allow read: if isSignedIn() && isAdmin();
+      allow create: if isSignedIn() && isValidId(reportId) && isValidReport(incoming());
+      allow update, delete: if isSignedIn() && isAdmin() && isValidId(reportId);
+    }
+
+    // Custom Holidays: Public read so all calendar users see live festival dates
+    match /custom_holidays/{holidayId} {
+      allow read: if true;
+      allow create: if isSignedIn() && isAdmin() && isValidId(holidayId) && isValidCustomHoliday(incoming());
+      allow update: if isSignedIn() && isAdmin() && isValidId(holidayId) && isValidCustomHoliday(incoming());
+      allow delete: if isSignedIn() && isAdmin() && isValidId(holidayId);
+    }
+
+    // Admin Users Collection
+    match /admins/{adminUid} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && isAdmin() && isValidId(adminUid);
+    }
+
+    // Connection testing
+    match /test/{docId} {
+      allow read: if true;
+    }
+  }
+}

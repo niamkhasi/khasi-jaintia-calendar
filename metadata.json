@@ -1,0 +1,8 @@
+{
+  "name": "Khasi Jaintia Calendar",
+  "description": "Traditional Khasi Jaintia Calendar with 8-day week and 13 months of 28 days, Khasi culture and moon cycle weekly markets",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

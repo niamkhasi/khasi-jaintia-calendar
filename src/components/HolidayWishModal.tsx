@@ -71,7 +71,7 @@ export const HolidayWishModal: React.FC<HolidayWishModalProps> = ({
         {/* Logo Emblem Thumbnail */}
         <div className="w-20 h-20 mx-auto rounded-full overflow-hidden shadow-2xl mb-3 shrink-0">
           <img
-            src="/logo.png"
+            src="/khasi-jaintia-logo-2026.png?v=20261111"
             alt="Khasi Jaintia Calendar"
             className="w-full h-full object-cover"
           />

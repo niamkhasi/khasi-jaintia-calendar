@@ -18,9 +18,10 @@ interface DayModalProps {
   currentUserEmail?: string;
   currentUserId?: string;
   isAdmin?: boolean;
-  onEditHolidayTitle?: (holidayId: string, newTitle: string) => Promise<void>;
+  onEditHolidayTitle?: (holidayId: string, newTitle: string, newWish?: string) => Promise<void>;
   onDeleteHoliday?: (holidayId: string, holidayName?: string) => Promise<void>;
   onOpenAddHoliday?: (dateStr: string) => void;
+  onViewWish?: (holiday: Holiday, year: number) => void;
 }
 
 export const DayModal: React.FC<DayModalProps> = ({
@@ -39,7 +40,8 @@ export const DayModal: React.FC<DayModalProps> = ({
   isAdmin = false,
   onEditHolidayTitle,
   onDeleteHoliday,
-  onOpenAddHoliday
+  onOpenAddHoliday,
+  onViewWish
 }) => {
   const [newNoteText, setNewNoteText] = useState('');
   const [newNoteCategory, setNewNoteCategory] = useState<DayNote['category']>('general');
@@ -48,6 +50,7 @@ export const DayModal: React.FC<DayModalProps> = ({
   // Edit / Delete holiday state
   const [editingHolidayId, setEditingHolidayId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState<string>('');
+  const [editingWish, setEditingWish] = useState<string>('');
   const [isSavingEdit, setIsSavingEdit] = useState<boolean>(false);
   const [editError, setEditError] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
@@ -104,6 +107,7 @@ export const DayModal: React.FC<DayModalProps> = ({
   const handleStartEdit = (holiday: Holiday) => {
     setEditingHolidayId(holiday.id);
     setEditingTitle(holiday.name);
+    setEditingWish(holiday.wishKhasi || holiday.wishEnglish || '');
     setEditError(null);
   };
 
@@ -112,7 +116,7 @@ export const DayModal: React.FC<DayModalProps> = ({
     setIsSavingEdit(true);
     setEditError(null);
     try {
-      await onEditHolidayTitle(holidayId, editingTitle.trim());
+      await onEditHolidayTitle(holidayId, editingTitle.trim(), editingWish.trim());
       setEditingHolidayId(null);
     } catch (err: unknown) {
       setEditError(err instanceof Error ? err.message : 'Failed to update holiday name.');
@@ -318,6 +322,15 @@ export const DayModal: React.FC<DayModalProps> = ({
                           autoFocus
                         />
 
+                        <textarea
+                          rows={2}
+                          value={editingWish}
+                          onChange={(e) => setEditingWish(e.target.value)}
+                          maxLength={250}
+                          placeholder="Edit wishing greeting (Optional)..."
+                          className="w-full px-3 py-1.5 text-xs rounded-xl border border-slate-300 text-slate-900 bg-white focus:outline-hidden focus:ring-2 focus:ring-[#0e2a3a]"
+                        />
+
                         <div className="flex items-center justify-end gap-2 text-xs pt-1">
                           <button
                             type="button"
@@ -384,16 +397,33 @@ export const DayModal: React.FC<DayModalProps> = ({
                           )}
                         </div>
                         
-                        {/* Traditional Wishes */}
+                        {/* Traditional Wishes & Greeting Card trigger */}
                         {(h.wishKhasi || h.wishEnglish) && (
-                          <div className="p-3 rounded-xl bg-white/80 border border-amber-200/80 space-y-1 shadow-2xs">
+                          <div 
+                            onClick={() => onViewWish && onViewWish(h, year)}
+                            className={`p-3 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300/90 space-y-1.5 shadow-2xs transition ${
+                              onViewWish ? 'cursor-pointer hover:bg-amber-100/70 hover:border-amber-400 group' : ''
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] font-black uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
+                                <Sparkles className="w-3.5 h-3.5 text-amber-600 fill-current" />
+                                <span>Holiday Wish • Ka Jingkitbok</span>
+                              </span>
+                              {onViewWish && (
+                                <span className="text-[10px] font-black text-amber-800 underline flex items-center gap-1 group-hover:text-amber-950">
+                                  <span>View Greeting Card</span>
+                                  <span>&rarr;</span>
+                                </span>
+                              )}
+                            </div>
                             {h.wishKhasi && (
-                              <p className="text-xs font-extrabold text-amber-950">
-                                ✨ “{h.wishKhasi}”
+                              <p className="text-xs font-black text-amber-950 leading-snug">
+                                “{h.wishKhasi}”
                               </p>
                             )}
                             {h.wishEnglish && (
-                              <p className="text-[11px] text-slate-700 italic">
+                              <p className="text-[11px] text-slate-700 italic leading-relaxed">
                                 “{h.wishEnglish}”
                               </p>
                             )}
@@ -401,6 +431,18 @@ export const DayModal: React.FC<DayModalProps> = ({
                         )}
 
                         <p className="text-xs text-amber-900/90 leading-relaxed">{h.description}</p>
+
+                        {/* Open Full Greeting Card Button */}
+                        {onViewWish && (h.wishKhasi || h.wishEnglish) && (
+                          <button
+                            type="button"
+                            onClick={() => onViewWish(h, year)}
+                            className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-xs transition cursor-pointer"
+                          >
+                            <Sparkles className="w-3.5 h-3.5 fill-current" />
+                            <span>See Festive Greeting &amp; Share Wish</span>
+                          </button>
+                        )}
 
                         {/* Owner & Admin Actions: Edit Name (within 7 days) and Delete anytime */}
                         {(canEdit || canDelete || (isOwner && !isWithin7Days)) && (

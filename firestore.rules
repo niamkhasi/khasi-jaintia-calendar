@@ -49,10 +49,13 @@ service cloud.firestore {
              data.date is string && data.date.size() == 10 && data.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$') &&
              data.type is string && (data.type == 'temp' || data.type == 'perm') &&
              data.userEmail is string && data.userEmail.size() > 0 && data.userEmail.size() <= 128 &&
-             data.status is string && (data.status == 'active' || data.status == 'expired' || data.status == 'deleted') &&
+             data.status is string && (data.status == 'active' || data.status == 'pending' || data.status == 'approved' || data.status == 'denied' || data.status == 'expired' || data.status == 'deleted') &&
              (!('expiryDate' in data) || (data.expiryDate is string && data.expiryDate.size() <= 64)) &&
              (!('userId' in data) || (data.userId is string && data.userId.size() <= 128)) &&
              (!('orderId' in data) || (data.orderId is string && data.orderId.size() <= 128)) &&
+             (!('wish' in data) || (data.wish is string && data.wish.size() <= 300)) &&
+             (!('wishKhasi' in data) || (data.wishKhasi is string && data.wishKhasi.size() <= 300)) &&
+             (!('wishEnglish' in data) || (data.wishEnglish is string && data.wishEnglish.size() <= 300)) &&
              (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 64)) &&
              (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64));
     }
@@ -78,6 +81,28 @@ service cloud.firestore {
              (!('wishKhasi' in data) || (data.wishKhasi is string && data.wishKhasi.size() <= 300)) &&
              (!('wishEnglish' in data) || (data.wishEnglish is string && data.wishEnglish.size() <= 300)) &&
              data.createdBy is string && data.createdBy == request.auth.uid;
+    }
+
+    // Validation for app_settings (e.g. banner carousel configuration)
+    function isValidAppSetting(data) {
+      return (!('enabled' in data) || data.enabled is bool) &&
+             (!('customBannerDurationSeconds' in data) || (data.customBannerDurationSeconds is int && data.customBannerDurationSeconds >= 5 && data.customBannerDurationSeconds <= 60)) &&
+             (!('showDurationSeconds' in data) || (data.showDurationSeconds is int && data.showDurationSeconds >= 5 && data.showDurationSeconds <= 60)) &&
+             (!('startDate' in data) || (data.startDate is string && data.startDate.size() <= 32)) &&
+             (!('endDate' in data) || (data.endDate is string && data.endDate.size() <= 32)) &&
+             (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64)) &&
+             (!('updatedBy' in data) || (data.updatedBy is string && data.updatedBy.size() <= 128)) &&
+             (!('banners' in data) || data.banners is list) &&
+             (!('googleAds' in data) || data.googleAds is map);
+    }
+
+    // Application Settings (Banner Carousel, custom duration 5-60s, AdMob toggles)
+    // Public read: so all calendar users automatically see live admin banners without updating app from Play Store
+    // Write: Only authorized administrators (muniphawa@gmail.com and niamkhasi@gmail.com)
+    match /app_settings/{settingId} {
+      allow read: if true;
+      allow create, update: if isSignedIn() && isAdmin() && isValidId(settingId) && isValidAppSetting(incoming());
+      allow delete: if isSignedIn() && isAdmin() && isValidId(settingId);
     }
 
     // Collection: all_holidays (paid consumable holidays & admin additions)

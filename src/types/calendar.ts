@@ -40,9 +40,12 @@ export interface AllHolidayItem {
   userEmail: string;
   userId?: string;
   createdAt: string;
-  status: 'active' | 'expired' | 'deleted';
+  status: 'active' | 'pending' | 'approved' | 'denied' | 'expired' | 'deleted';
   expiryDate?: string; // YYYY-MM-DD (for temp: date + 1 year) or 'forever'
   orderId?: string;
+  wish?: string;
+  wishKhasi?: string;
+  wishEnglish?: string;
 }
 
 export interface HolidayReport {

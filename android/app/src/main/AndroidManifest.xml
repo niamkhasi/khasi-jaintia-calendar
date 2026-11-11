@@ -24,6 +24,11 @@
             android:name="com.google.androidbrowserhelper.trusted.EXTRA_ENABLE_PLAY_BILLING"
             android:value="true" />
 
+        <!-- Google Mobile Ads SDK Application ID -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-2632827933421052~6102872245" />
+
         <activity
             android:name="com.google.androidbrowserhelper.trusted.LauncherActivity"
             android:exported="true"

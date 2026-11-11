@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle2, MessageCircle, Copy, Check, Sparkles, ArrowRight, ShieldCheck } from 'lucide-react';
+import { X, CheckCircle2, MessageCircle, Copy, Check, Sparkles, ArrowRight, ShieldCheck } from 'lucide-react';
 import { PurchaseResult } from '../services/billingClient';
 import { SUPPORT_PHONE } from '../hooks/useFirebaseHolidays';
 
@@ -38,6 +38,17 @@ export const PurchaseSuccessModal: React.FC<PurchaseSuccessModalProps> = ({
       >
         {/* Top Header */}
         <div className="bg-linear-to-r from-emerald-600 to-teal-700 text-white p-6 text-center relative">
+          {/* Top right X button to quit / close */}
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute top-3.5 right-3.5 p-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 active:scale-95 transition cursor-pointer"
+            aria-label="Close / Exit"
+            title="Close / Exit"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
           <div className="w-16 h-16 rounded-full bg-white/20 border-2 border-white/50 flex items-center justify-center mx-auto mb-3 shadow-md">
             <CheckCircle2 className="w-10 h-10 text-white" />
           </div>

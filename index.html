@@ -13,18 +13,18 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Khasi Calendar" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" type="image/png" href="/logo.png" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" href="/khasi-jaintia-logo-2026.png?v=20261111" />
+    <link rel="apple-touch-icon" href="/khasi-jaintia-logo-2026.png?v=20261111" />
 
     <!-- Open Graph & Social Cards -->
     <meta property="og:title" content="Khasi Jaintia Calendar - 8 Sngi Iew | By Ieij Iala Ka Jong" />
     <meta property="og:description" content="Traditional Khasi Jaintia Calendar with 8-day week and 13 months of 28 days, Khasi culture and moon cycle weekly markets" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="/logo.png" />
+    <meta property="og:image" content="/khasi-jaintia-logo-2026.png?v=20261111" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Khasi Jaintia Calendar - 8 Sngi Iew | By Ieij Iala Ka Jong" />
     <meta name="twitter:description" content="Traditional Khasi Jaintia Calendar with 8-day week and 13 months of 28 days, Khasi culture and moon cycle weekly markets" />
-    <meta name="twitter:image" content="/logo.png" />
+    <meta name="twitter:image" content="/khasi-jaintia-logo-2026.png?v=20261111" />
 
     <!-- Google Fonts for crisp typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,6 +33,14 @@
   </head>
   <body class="bg-slate-100 font-sans text-slate-800 antialiased selection:bg-amber-400 selection:text-slate-950">
     <div id="root"></div>
+    <script>
+      // Immediate Service Worker registration for PWA standalone WebAPK support
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function() {});
+        });
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -37,12 +37,27 @@
         },
         "status": {
           "type": "string",
-          "enum": ["active", "expired", "deleted"],
+          "enum": ["active", "pending", "approved", "denied", "expired", "deleted"],
           "description": "Status of the holiday"
         },
         "expiryDate": {
           "type": "string",
           "description": "Expiry date string for temporary holidays (YYYY-MM-DD) or 'forever'"
+        },
+        "wish": {
+          "type": "string",
+          "maxLength": 300,
+          "description": "Optional holiday greeting or wish message"
+        },
+        "wishKhasi": {
+          "type": "string",
+          "maxLength": 300,
+          "description": "Optional traditional greeting in Khasi/Pnar"
+        },
+        "wishEnglish": {
+          "type": "string",
+          "maxLength": 300,
+          "description": "Optional greeting in English"
         }
       },
       "required": ["title", "date", "type", "userEmail", "status"]
@@ -189,9 +204,41 @@
         }
       },
       "required": ["holidayId", "deletedBy"]
+    },
+    "appSetting": {
+      "title": "Application Setting",
+      "description": "Global application configuration like banner carousel and ads settings",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "customBannerDurationSeconds": {
+          "type": "integer",
+          "description": "Duration for custom banners in seconds (5-60)"
+        },
+        "startDate": {
+          "type": "string"
+        },
+        "endDate": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        },
+        "updatedBy": {
+          "type": "string"
+        }
+      }
     }
   },
   "firestore": {
+    "/app_settings/{settingId}": {
+      "schema": {
+        "$ref": "#/entities/appSetting"
+      },
+      "description": "Publicly readable application settings like banner carousel; writable only by verified administrators."
+    },
     "/all_holidays/{holidayId}": {
       "schema": {
         "$ref": "#/entities/allHoliday"

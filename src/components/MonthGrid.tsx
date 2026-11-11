@@ -53,9 +53,9 @@ export const MonthGrid: React.FC<MonthGridProps> = ({
               onTrailingDayClick(prevDateYear, prevDateMonth, prevMonthDay, -1);
             }}
             title={`Click date to switch smoothly to ${ENG_MONTHS[prevDateMonth]}`}
-            className="border-r border-b border-slate-200 p-1.5 md:p-2 text-center min-h-[76px] md:min-h-[88px] opacity-40 hover:opacity-85 cursor-pointer bg-slate-50/70 hover:bg-slate-100 transition-all flex flex-col justify-between group"
+            className="border-r border-b border-slate-200 p-1.5 md:p-2 text-center min-h-[76px] md:min-h-[88px] opacity-40 hover:opacity-85 cursor-pointer bg-slate-50/70 hover:bg-slate-100 active:scale-95 active:bg-amber-100/60 transition-all flex flex-col justify-between group"
           >
-            <div className="w-7 h-7 md:w-8 md:h-8 rounded-full border border-slate-300 flex items-center justify-center mx-auto text-xs font-semibold tabular-nums text-slate-600 group-hover:scale-105 group-hover:border-slate-500 transition">
+            <div className="w-7 h-7 md:w-8 md:h-8 rounded-full border border-slate-300 flex items-center justify-center mx-auto text-xs font-semibold tabular-nums text-slate-600 group-hover:scale-110 group-hover:border-slate-500 transition">
               {prevMonthDay}
             </div>
 
@@ -106,18 +106,30 @@ export const MonthGrid: React.FC<MonthGridProps> = ({
             }}
             className={`border-r border-b border-slate-200 p-1.5 md:p-2 text-center min-h-[76px] md:min-h-[88px] cursor-pointer transition-all duration-200 flex flex-col justify-between relative group ${
               isTodayDay
-                ? `bg-amber-50/95 ring-2 ring-[#0e2a3a] ${
-                    todayPulsing ? 'ring-4 ring-[#f1c40f] scale-105 shadow-xl animate-bounce' : 'shadow-xs'
+                ? `bg-amber-50/95 z-10 ${
+                    todayPulsing ? 'scale-105 shadow-xl animate-bounce z-20' : 'shadow-xs'
                   }`
                 : isHighlighted
-                ? 'bg-amber-50/90 ring-2 ring-inset ring-[#f1c40f]'
+                ? 'bg-amber-50/90 ring-2 ring-inset ring-[#f1c40f] z-10'
                 : isSunday
                 ? 'bg-rose-50/20 hover:bg-slate-50'
                 : 'hover:bg-slate-50'
             }`}
           >
+            {/* Full 4-sided rectangle mark for Today - ensures all 4 borders (top, bottom, left, right) are completely visible */}
+            {isTodayDay && (
+              <div 
+                className={`absolute inset-0 pointer-events-none z-20 ${
+                  todayPulsing 
+                    ? 'border-4 border-[#f1c40f] shadow-lg' 
+                    : 'border-2 border-[#0e2a3a]'
+                }`}
+                aria-hidden="true"
+              />
+            )}
+
             {/* Top indicator icons */}
-            <div className="flex items-center justify-between w-full px-0.5">
+            <div className="flex items-center justify-between w-full px-0.5 relative z-10">
               {isTodayDay ? (
                 <span className="text-[8px] md:text-[9px] font-black uppercase text-[#0e2a3a] bg-[#f1c40f] px-1.5 py-0.2 rounded-full shadow-xs">
                   TODAY
@@ -249,9 +261,9 @@ export const MonthGrid: React.FC<MonthGridProps> = ({
                 onTrailingDayClick(nextYear, nextMonth, nextDay, 1);
               }}
               title={`Click date to switch smoothly to ${ENG_MONTHS[nextMonth]}`}
-              className="border-r border-b border-slate-200 p-1.5 md:p-2 text-center min-h-[76px] md:min-h-[88px] opacity-40 hover:opacity-85 cursor-pointer bg-slate-50/70 hover:bg-slate-100 transition-all flex flex-col justify-between group"
+              className="border-r border-b border-slate-200 p-1.5 md:p-2 text-center min-h-[76px] md:min-h-[88px] opacity-40 hover:opacity-85 cursor-pointer bg-slate-50/70 hover:bg-slate-100 active:scale-95 active:bg-amber-100/60 transition-all flex flex-col justify-between group"
             >
-              <div className="w-7 h-7 md:w-8 md:h-8 rounded-full border border-slate-300 flex items-center justify-center mx-auto text-xs font-semibold tabular-nums text-slate-600 group-hover:scale-105 group-hover:border-slate-500 transition">
+              <div className="w-7 h-7 md:w-8 md:h-8 rounded-full border border-slate-300 flex items-center justify-center mx-auto text-xs font-semibold tabular-nums text-slate-600 group-hover:scale-110 group-hover:border-slate-500 transition">
                 {nextDay}
               </div>
 

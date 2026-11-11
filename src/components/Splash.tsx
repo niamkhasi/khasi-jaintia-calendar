@@ -31,7 +31,7 @@ export const Splash: React.FC<SplashProps> = ({ onDismiss }) => {
       <div className="relative">
         <div className="w-44 h-44 rounded-full overflow-hidden shadow-2xl transition-transform hover:scale-105">
           <img
-            src="/logo.png"
+            src="/khasi-jaintia-logo-2026.png?v=20261111"
             alt="Khasi Jaintia Calendar Logo"
             className="w-full h-full object-cover"
           />

@@ -42,33 +42,35 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
   const permProd = BILLING_PRODUCTS.permanent_holiday_forever;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 backdrop-blur-xs p-0 sm:p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-0 sm:p-4 overflow-hidden">
       <div 
-        className="w-full max-w-lg bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden border border-slate-200 animate-in slide-in-from-bottom duration-300 max-h-[92vh] flex flex-col"
+        className="w-full h-full sm:h-auto sm:max-h-[92vh] max-w-lg bg-white sm:rounded-3xl shadow-2xl overflow-hidden border-0 sm:border sm:border-slate-200 animate-in zoom-in-95 duration-200 flex flex-col"
         role="dialog"
         aria-modal="true"
         aria-labelledby="paywall-title"
       >
-        {/* Header */}
-        <div className="bg-[#0e2a3a] text-white p-5 relative">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="w-8 h-8 rounded-xl bg-[#f1c40f] text-slate-950 flex items-center justify-center font-black">
+        {/* Header - Fixed on top, always visible with small X button */}
+        <div className="bg-[#0e2a3a] text-white p-4 sm:p-5 relative shrink-0 border-b border-white/10 z-20">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="w-8 h-8 rounded-xl bg-[#f1c40f] text-slate-950 flex items-center justify-center font-black shrink-0 shadow-xs">
                 ★
               </span>
-              <div>
-                <h3 id="paywall-title" className="text-lg font-black font-display tracking-tight">
+              <div className="min-w-0">
+                <h3 id="paywall-title" className="text-base sm:text-lg font-black font-display tracking-tight leading-tight truncate">
                   Add Public Holiday
                 </h3>
-                <p className="text-xs text-[#f1c40f] font-semibold">
+                <p className="text-[11px] sm:text-xs text-[#f1c40f] font-semibold leading-tight truncate">
                   Google Play Billing v6 • 1 Pay = 1 Holiday Slot
                 </p>
               </div>
             </div>
             <button
+              type="button"
               onClick={onClose}
-              className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition"
-              aria-label="Close"
+              className="p-1.5 sm:p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 active:scale-95 transition cursor-pointer shrink-0"
+              aria-label="Close / Exit"
+              title="Close / Exit"
             >
               <X className="w-5 h-5" />
             </button>
@@ -211,7 +213,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
         </div>
 
         {/* Footer with Purchase Button and Help & Complaint Link */}
-        <div className="p-4 sm:p-5 bg-slate-50 border-t border-slate-200 space-y-3">
+        <div className="p-4 sm:p-5 bg-slate-50 border-t border-slate-200 space-y-3 shrink-0 z-20">
           <button
             onClick={handleBuy}
             disabled={purchasing}

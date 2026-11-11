@@ -6,17 +6,17 @@ export const PWAInstallButton: React.FC = () => {
   const { isInstallable, isInstalled, isIOS, install } = usePWAInstall();
   const [showIOSGuide, setShowIOSGuide] = useState(false);
 
-  // If already installed, hide
+  // If already running in standalone mode (installed), hide
   if (isInstalled) {
     return null;
   }
 
-  // Chromium / Android / Desktop flow
+  // Chromium / Android / Desktop flow when browser prompt is active
   if (isInstallable) {
     return (
       <button
         onClick={install}
-        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#f1c40f] text-slate-900 hover:bg-amber-300 transition-colors shadow-sm"
+        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#f1c40f] text-slate-900 hover:bg-amber-300 transition-colors shadow-sm cursor-pointer"
         title="Install Khasi Jaintia Calendar for offline use"
       >
         <Download className="w-3.5 h-3.5" />
@@ -31,7 +31,7 @@ export const PWAInstallButton: React.FC = () => {
       <>
         <button
           onClick={() => setShowIOSGuide(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
           title="Install on iPhone / iPad"
         >
           <Share className="w-3.5 h-3.5 text-[#f1c40f]" />

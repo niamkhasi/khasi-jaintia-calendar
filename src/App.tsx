@@ -20,7 +20,10 @@ import {
   Plus,
   ShieldCheck,
   User,
-  LogOut
+  LogOut,
+  Scale,
+  X,
+  Clock
 } from 'lucide-react';
 import { 
   KHASI_MONTHS, 
@@ -37,6 +40,7 @@ import { DayModal } from './components/DayModal';
 import { MonthGrid } from './components/MonthGrid';
 import { MarketGuideModal } from './components/MarketGuideModal';
 import { MarketFinderModal } from './components/MarketFinderModal';
+import { RulesModal } from './components/RulesModal';
 import { HolidaysModal } from './components/HolidaysModal';
 import { HolidayWishModal } from './components/HolidayWishModal';
 import { HolidayWishBanner } from './components/HolidayWishBanner';
@@ -52,6 +56,10 @@ import { useCalendarNotes } from './hooks/useCalendarNotes';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
 import { useFirebaseHolidays, ADMIN_EMAILS } from './hooks/useFirebaseHolidays';
 import { billingClient, PurchaseResult } from './services/billingClient';
+import { BannerCarousel } from './components/BannerCarousel';
+import { BannerSettingsModal } from './components/BannerSettingsModal';
+import { PrivacyPolicyModal } from './components/PrivacyPolicyModal';
+import { BannerConfig, getBannerConfig, isBannerActiveToday, subscribeToBannerConfig } from './services/bannerService';
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -64,6 +72,7 @@ export default function App() {
   // Modals state
   const [selectedDayInfo, setSelectedDayInfo] = useState<{ year: number; month: number; day: number } | null>(null);
   const [showGuide, setShowGuide] = useState(false);
+  const [showRules, setShowRules] = useState(false);
   const [showFinder, setShowFinder] = useState(false);
   const [showHolidays, setShowHolidays] = useState(false);
   const [showHolidayManager, setShowHolidayManager] = useState(false);
@@ -81,15 +90,51 @@ export default function App() {
   // Slots state synced with localStorage / SharedPreferences
   const [slots, setSlots] = useState<{ tempSlotsCount: number; permSlotsCount: number }>(() => billingClient.getSlots());
 
+  // Banner Carousel & Settings
+  const [bannerConfig, setBannerConfig] = useState<BannerConfig>(() => getBannerConfig());
+  const [showBanner, setShowBanner] = useState<boolean>(() => isBannerActiveToday(getBannerConfig()));
+  const [showBannerSettings, setShowBannerSettings] = useState<boolean>(false);
+  const [showPrivacyPolicy, setShowPrivacyPolicy] = useState<boolean>(false);
+  const [showSyncedToast, setShowSyncedToast] = useState<boolean>(false);
+  const [reviewNoticeToast, setReviewNoticeToast] = useState<string | null>(null);
+
   useEffect(() => {
+    let syncTimer: any;
     const handleSlotsSync = () => {
       setSlots(billingClient.getSlots());
     };
+    const handleBannerUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<BannerConfig>;
+      const newConfig = customEvent.detail || getBannerConfig();
+      setBannerConfig(newConfig);
+      setShowBanner(isBannerActiveToday(newConfig));
+    };
+    const handleHolidaysSynced = () => {
+      setShowSyncedToast(true);
+      if (syncTimer) clearTimeout(syncTimer);
+      syncTimer = setTimeout(() => {
+        setShowSyncedToast(false);
+      }, 4000);
+    };
+
+    // Real-time Firestore sync: auto-shows custom banners to all users live without Play Store update!
+    const unsubscribeBanner = subscribeToBannerConfig((liveConfig) => {
+      setBannerConfig(liveConfig);
+      setShowBanner(isBannerActiveToday(liveConfig));
+    });
+
     window.addEventListener('billing_slots_updated', handleSlotsSync);
     window.addEventListener('storage', handleSlotsSync);
+    window.addEventListener('kj_banner_updated', handleBannerUpdate);
+    window.addEventListener('kj_holidays_synced', handleHolidaysSynced);
+
     return () => {
+      if (syncTimer) clearTimeout(syncTimer);
+      unsubscribeBanner();
       window.removeEventListener('billing_slots_updated', handleSlotsSync);
       window.removeEventListener('storage', handleSlotsSync);
+      window.removeEventListener('kj_banner_updated', handleBannerUpdate);
+      window.removeEventListener('kj_holidays_synced', handleHolidaysSynced);
     };
   }, []);
 
@@ -101,9 +146,12 @@ export default function App() {
     reports,
     currentUser, 
     isAdmin, 
+    pendingNotificationsCount,
     loginWithGoogle, 
     logout, 
     addPaidHoliday,
+    approveHoliday,
+    denyHoliday,
     editPaidHolidayTitle,
     deleteHolidayDoc,
     adminDeletePaidHoliday,
@@ -254,33 +302,15 @@ export default function App() {
       return;
     }
 
-    // If currently dragging, immediately glide to completion
-    if (dragOffset !== 0) {
-      setTransitionState({
-        dir,
-        targetYear: targetY,
-        targetMonth: targetM,
-        pendingDay,
-        isAnimating: true,
-      });
-      setIsDragging(false);
-    } else {
-      // Triggered by click (trailing date number, chevron, or dropdown): prepare offscreen first
-      setTransitionState({
-        dir,
-        targetYear: targetY,
-        targetMonth: targetM,
-        pendingDay,
-        isAnimating: false,
-      });
-      setIsDragging(false);
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setTransitionState(prev => (prev ? { ...prev, isAnimating: true } : null));
-        });
-      });
-    }
+    // Trigger month switch transition
+    setTransitionState({
+      dir,
+      targetYear: targetY,
+      targetMonth: targetM,
+      pendingDay,
+      isAnimating: true,
+    });
+    setIsDragging(false);
 
     setTimeout(() => {
       setCurrentYear(targetY);
@@ -290,7 +320,7 @@ export default function App() {
       }
       setTransitionState(null);
       setDragOffset(0);
-    }, 350);
+    }, 320);
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -311,8 +341,8 @@ export default function App() {
     const diffY = touchMoveRef.current.y - touchStartRef.current.y;
 
     if (isSwipingHorizontal.current === null) {
-      if (Math.abs(diffX) > 8 || Math.abs(diffY) > 8) {
-        isSwipingHorizontal.current = Math.abs(diffX) > Math.abs(diffY);
+      if (Math.abs(diffX) > 20 || Math.abs(diffY) > 20) {
+        isSwipingHorizontal.current = Math.abs(diffX) > Math.abs(diffY) * 1.25;
       }
     }
 
@@ -358,7 +388,7 @@ export default function App() {
     isSwipingHorizontal.current = null;
     setTimeout(() => {
       hasSwiped.current = false;
-    }, 100);
+    }, 50);
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -375,7 +405,7 @@ export default function App() {
     const diffX = e.clientX - mouseStartRef.current.x;
     const diffY = e.clientY - mouseStartRef.current.y;
 
-    if (Math.abs(diffX) > 8 && Math.abs(diffX) > Math.abs(diffY)) {
+    if (Math.abs(diffX) > 20 && Math.abs(diffX) > Math.abs(diffY) * 1.25) {
       hasSwiped.current = true;
       let offset = diffX;
       if ((currentYear <= 2025 && currentMonth === 0 && diffX > 0) ||
@@ -414,7 +444,7 @@ export default function App() {
     mouseStartRef.current = null;
     setTimeout(() => {
       hasSwiped.current = false;
-    }, 100);
+    }, 50);
   };
 
   const goToday = () => {
@@ -446,7 +476,7 @@ export default function App() {
 
   // Click on date in current month -> open day details
   const handleCurrentDayClick = (y: number, m: number, d: number) => {
-    if (hasSwiped.current || isDragging || transitionState) {
+    if (isDragging || transitionState) {
       return;
     }
     setSelectedDayInfo({ year: y, month: m, day: d });
@@ -454,7 +484,7 @@ export default function App() {
 
   // Click on leading/trailing date number -> smooth app-switch transition to that month
   const handleTrailingDayClick = (y: number, m: number, _d: number, dir: number) => {
-    if (hasSwiped.current || isDragging || transitionState) {
+    if (isDragging || transitionState) {
       return;
     }
     triggerSmoothMonthChange(dir, undefined, y, m);
@@ -589,7 +619,7 @@ export default function App() {
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 md:w-14 md:h-14 rounded-full overflow-hidden shrink-0 shadow-lg flex items-center justify-center bg-transparent">
                 <img
-                  src="/logo.png"
+                  src="/khasi-jaintia-logo-2026.png?v=20261111"
                   alt="Khasi Jaintia Emblem"
                   className="w-full h-full object-cover"
                 />
@@ -628,12 +658,17 @@ export default function App() {
               {/* CUSTOMER CARE: Help & Complaint */}
               <button
                 onClick={() => setShowCustomerCare(true)}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition cursor-pointer"
+                className="relative flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition cursor-pointer"
                 title="Customer Care: WhatsApp (+917005893341) & Email (muniphawa@gmail.com)"
               >
                 <span className="text-[#f1c40f]">💬</span>
                 <span className="hidden sm:inline">Help & Complaint</span>
                 <span className="sm:hidden">Help</span>
+                {isAdmin && pendingNotificationsCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-4 h-4 px-1 rounded-full bg-red-600 text-white text-[10px] font-black flex items-center justify-center animate-pulse shadow-md border-2 border-[#0e2a3a]">
+                    {pendingNotificationsCount}
+                  </span>
+                )}
               </button>
 
               <button
@@ -644,6 +679,15 @@ export default function App() {
                 <BookOpen className="w-3.5 h-3.5 text-[#f1c40f]" />
                 <span className="hidden sm:inline">8 Sngi Iew Guide</span>
                 <span className="sm:hidden">Guide</span>
+              </button>
+
+              <button
+                onClick={() => setShowRules(true)}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition cursor-pointer"
+                title="Jingmana / Rules before adding holidays"
+              >
+                <Scale className="w-3.5 h-3.5 text-[#f1c40f]" />
+                <span>Rules</span>
               </button>
 
               <button
@@ -709,53 +753,71 @@ export default function App() {
                   </button>
                 )}
 
-                {/* Profile Popover / Dropdown */}
+                {/* Profile Modal / Dialog - Centered in viewport */}
                 {showProfileMenu && currentUser && (
-                  <>
+                  <div 
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="profile-menu-title"
+                  >
                     <div
-                      className="fixed inset-0 z-40"
+                      className="fixed inset-0"
                       onClick={() => setShowProfileMenu(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-[#0e2a3a] border-2 border-[#f1c40f] shadow-2xl p-4 z-50 text-white animate-in fade-in duration-150">
-                      <div className="flex items-center gap-3 pb-3 border-b border-white/10">
-                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#f1c40f] bg-slate-800 shrink-0 flex items-center justify-center">
-                          {currentUser.photoURL ? (
-                            <img
-                              src={currentUser.photoURL}
-                              alt={currentUser.displayName || 'Profile'}
-                              className="w-full h-full object-cover"
-                              referrerPolicy="no-referrer"
-                            />
-                          ) : (
-                            <span className="text-lg font-black text-[#f1c40f]">
-                              {currentUser.displayName ? currentUser.displayName[0].toUpperCase() : 'U'}
-                            </span>
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="font-bold text-sm text-white truncate">
-                            {currentUser.displayName || 'Khasi Calendar User'}
+                    <div className="relative w-full max-w-xs sm:max-w-sm rounded-3xl bg-[#0e2a3a] border-2 border-[#f1c40f] shadow-2xl p-5 z-10 text-white animate-in zoom-in-95 duration-200">
+                      <div className="flex items-center justify-between pb-3.5 border-b border-white/10 gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#f1c40f] bg-slate-800 shrink-0 flex items-center justify-center shadow-sm">
+                            {currentUser.photoURL ? (
+                              <img
+                                src={currentUser.photoURL}
+                                alt={currentUser.displayName || 'Profile'}
+                                className="w-full h-full object-cover"
+                                referrerPolicy="no-referrer"
+                              />
+                            ) : (
+                              <span className="text-lg font-black text-[#f1c40f]">
+                                {currentUser.displayName ? currentUser.displayName[0].toUpperCase() : 'U'}
+                              </span>
+                            )}
                           </div>
-                          <div className="text-[11px] text-slate-300 truncate">
-                            {currentUser.email}
-                          </div>
-                          {isAdmin && (
-                            <div className="mt-1 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm bg-[#f1c40f] text-slate-950 text-[10px] font-black uppercase tracking-wider">
-                              <ShieldCheck className="w-3 h-3" />
-                              <span>Admin</span>
+                          <div className="min-w-0 flex-1">
+                            <div id="profile-menu-title" className="font-bold text-sm text-white truncate">
+                              {currentUser.displayName || 'Khasi Calendar User'}
                             </div>
-                          )}
+                            <div className="text-[11px] text-slate-300 break-all">
+                              {currentUser.email}
+                            </div>
+                            {isAdmin && (
+                              <div className="mt-1 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm bg-[#f1c40f] text-slate-950 text-[10px] font-black uppercase tracking-wider">
+                                <ShieldCheck className="w-3 h-3" />
+                                <span>Admin</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
+
+                        {/* Top close button to easily dismiss */}
+                        <button
+                          type="button"
+                          onClick={() => setShowProfileMenu(false)}
+                          className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition cursor-pointer shrink-0"
+                          aria-label="Close"
+                          title="Close"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
                       </div>
 
-                      <div className="pt-3 space-y-2">
+                      <div className="pt-3.5 space-y-2">
                         {isAdmin && (
                           <button
                             onClick={() => {
                               setShowProfileMenu(false);
                               setShowAdminManager(true);
                             }}
-                            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl bg-linear-to-r from-[#f1c40f] to-amber-400 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-black transition cursor-pointer shadow-sm"
+                            className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-linear-to-r from-[#f1c40f] to-amber-400 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-black transition cursor-pointer shadow-sm"
                           >
                             <ShieldCheck className="w-4 h-4" />
                             <span>Admin Holiday Manager</span>
@@ -767,10 +829,41 @@ export default function App() {
                             setShowProfileMenu(false);
                             setShowCustomerCare(true);
                           }}
-                          className="w-full flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-semibold transition cursor-pointer"
+                          className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-semibold transition cursor-pointer"
                         >
-                          <span>💬</span>
-                          <span>Help & WhatsApp Support</span>
+                          <div className="flex items-center gap-2">
+                            <span>💬</span>
+                            <span>Help & WhatsApp Support</span>
+                          </div>
+                          {isAdmin && pendingNotificationsCount > 0 && (
+                            <span className="px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-black animate-pulse shadow-xs">
+                              {pendingNotificationsCount} new
+                            </span>
+                          )}
+                        </button>
+
+                        {isAdmin && (
+                          <button
+                            onClick={() => {
+                              setShowProfileMenu(false);
+                              setShowBannerSettings(true);
+                            }}
+                            className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-semibold transition cursor-pointer"
+                          >
+                            <span>🎨</span>
+                            <span>Banner Settings</span>
+                          </button>
+                        )}
+
+                        <button
+                          onClick={() => {
+                            setShowProfileMenu(false);
+                            setShowPrivacyPolicy(true);
+                          }}
+                          className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-semibold transition cursor-pointer"
+                        >
+                          <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                          <span>Privacy Policy</span>
                         </button>
 
                         <button
@@ -778,14 +871,14 @@ export default function App() {
                             setShowProfileMenu(false);
                             await logout();
                           }}
-                          className="w-full flex items-center gap-2 px-3 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-200 border border-red-500/30 text-xs font-semibold transition cursor-pointer"
+                          className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-200 border border-red-500/40 text-xs font-bold transition cursor-pointer mt-1"
                         >
                           <LogOut className="w-4 h-4" />
                           <span>Sign Out</span>
                         </button>
                       </div>
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
 
@@ -824,11 +917,35 @@ export default function App() {
           />
         )}
 
-        {/* Offline Banner */}
+        {/* Offline & Auto-Sync Banner */}
         {!isOnline && (
-          <div className="bg-amber-500 text-slate-950 px-4 py-1.5 text-xs font-bold flex items-center justify-center gap-2">
-            <WifiOff className="w-4 h-4" />
-            <span>Offline Mode Active • All calendar market cycles & saved notes work offline without internet.</span>
+          <div className="bg-amber-500 text-slate-950 px-4 py-2 text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition-all">
+            <WifiOff className="w-4 h-4 shrink-0" />
+            <span>Offline Mode • Loaded from local storage (Calendar, Holidays & 8 Sngi Iew work offline without internet)</span>
+          </div>
+        )}
+
+        {isOnline && showSyncedToast && (
+          <div className="bg-emerald-600 text-white px-4 py-2 text-xs font-bold flex items-center justify-center gap-2 shadow-xs animate-in fade-in transition-all">
+            <Check className="w-4 h-4 shrink-0" />
+            <span>Internet Connected • Auto-synced all holidays from Firebase</span>
+          </div>
+        )}
+
+        {/* Holiday Under Review Notification Banner */}
+        {reviewNoticeToast && (
+          <div className="bg-amber-600 text-white px-4 py-2.5 text-xs font-bold flex items-center justify-between gap-2 shadow-md animate-in slide-in-from-top-2 duration-200">
+            <div className="flex items-center gap-2 min-w-0">
+              <Clock className="w-4 h-4 shrink-0 animate-pulse text-amber-200" />
+              <span className="truncate">{reviewNoticeToast}</span>
+            </div>
+            <button
+              onClick={() => setReviewNoticeToast(null)}
+              className="p-1 rounded-md text-amber-100 hover:text-white hover:bg-amber-700/50 transition cursor-pointer shrink-0"
+              aria-label="Dismiss notice"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
         )}
 
@@ -898,6 +1015,14 @@ export default function App() {
               <span>Today</span>
             </button>
           </div>
+
+          {/* Banner Carousel (Full Screen Width Left-to-Right like Flipkart) */}
+          {showBanner && isBannerActiveToday(bannerConfig) && (
+            <BannerCarousel
+              config={bannerConfig}
+              onAutoDisappear={() => setShowBanner(false)}
+            />
+          )}
 
           {/* Month Subtitle, Seasonal Meaning & Slide Cue */}
           {monthDescription && (
@@ -1170,6 +1295,9 @@ export default function App() {
           onEditHolidayTitle={editPaidHolidayTitle}
           onDeleteHoliday={deleteHolidayDoc}
           onOpenAddHoliday={(dateStr) => handleOpenAddHoliday(dateStr)}
+          onViewWish={(hol, y) => {
+            setActiveWishHoliday({ holiday: hol, year: y });
+          }}
         />
       )}
 
@@ -1178,6 +1306,14 @@ export default function App() {
         <MarketGuideModal
           onClose={() => setShowGuide(false)}
           onSelectMarketForFilter={(idx) => setHighlightMarketIdx(idx)}
+        />
+      )}
+
+      {/* Jingmana / Rules Modal */}
+      {showRules && (
+        <RulesModal
+          onClose={() => setShowRules(false)}
+          onOpenHelp={() => setShowCustomerCare(true)}
         />
       )}
 
@@ -1285,11 +1421,18 @@ export default function App() {
             await addPaidHoliday(data);
             setSlots(billingClient.getSlots());
             setAddHolidayPreselectedDate(undefined);
+            if (!isAdmin) {
+              setReviewNoticeToast(`"${data.title}": Your holiday is under review, wait for admin approve.`);
+              setTimeout(() => {
+                setReviewNoticeToast(null);
+              }, 8000);
+            }
           }}
           onNeedMoreSlots={() => {
             setShowAddPaidHoliday(false);
             setShowPaywall(true);
           }}
+          onOpenRules={() => setShowRules(true)}
         />
       )}
 
@@ -1298,10 +1441,33 @@ export default function App() {
         <CustomerCareModal
           onClose={() => setShowCustomerCare(false)}
           userEmail={currentUser?.email || ''}
+          isAdmin={isAdmin}
           lastOrderId={billingClient.getLastOrderId()}
           allHolidays={allPaidHolidays}
           onSubmitReport={submitHolidayReport}
-          onOpenAndroidBuild={() => setShowAndroidBuild(true)}
+          onOpenBannerSettings={() => setShowBannerSettings(true)}
+          onOpenPrivacyPolicy={() => setShowPrivacyPolicy(true)}
+          onApproveHoliday={approveHoliday}
+          onDenyHoliday={denyHoliday}
+        />
+      )}
+
+      {/* Privacy Policy Modal */}
+      {showPrivacyPolicy && (
+        <PrivacyPolicyModal
+          onClose={() => setShowPrivacyPolicy(false)}
+        />
+      )}
+
+      {/* Banner Carousel Settings Modal - Only accessible to authorized admins */}
+      {showBannerSettings && isAdmin && (
+        <BannerSettingsModal
+          onClose={() => setShowBannerSettings(false)}
+          onSaved={() => {
+            const cfg = getBannerConfig();
+            setBannerConfig(cfg);
+            setShowBanner(isBannerActiveToday(cfg));
+          }}
         />
       )}
 

@@ -229,6 +229,30 @@ bubblewrap build`;
             </p>
           </div>
 
+          {/* Kodular Creator Instructions */}
+          <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 font-extrabold text-amber-950 text-xs">
+                <Sparkles className="w-4 h-4 text-amber-600" />
+                <span>Kodular Android WebView Setup (Offline Ready)</span>
+              </div>
+              <span className="text-[10px] text-amber-800 font-bold bg-amber-100 px-2 py-0.5 rounded-md border border-amber-300">
+                100% Offline Compatible
+              </span>
+            </div>
+
+            <p className="text-[11px] text-amber-950 leading-relaxed">
+              To run inside <strong>Kodular Creator</strong> without blank screen when offline:
+            </p>
+
+            <ul className="text-[11px] text-amber-900 space-y-1 list-disc list-inside">
+              <li>Add a <strong>Web_Viewer</strong> component to your screen.</li>
+              <li>Set <strong>HomeUrl</strong> to your app link or host.</li>
+              <li>In Web_Viewer Properties: Ensure <strong>EnableDOMStorage</strong> and <strong>Cache</strong> are checked.</li>
+              <li>The app automatically downloads all holidays to local storage on first run and loads them offline with zero blank screen. When internet returns, it auto-syncs.</li>
+            </ul>
+          </div>
+
         </div>
 
         {/* Footer */}

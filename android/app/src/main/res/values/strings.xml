@@ -3,4 +3,9 @@
     <string name="package_name">com.khasi.jaintia.calendar</string>
     <string name="host_name">ais-pre-ifskr2gibimdmh23zskyjq-536277912342.asia-east1.run.app</string>
     <string name="default_url">https://ais-pre-ifskr2gibimdmh23zskyjq-536277912342.asia-east1.run.app/</string>
+    
+    <!-- Google Mobile Ads (AdMob) IDs -->
+    <string name="admob_app_id">ca-app-pub-2632827933421052~6102872245</string>
+    <string name="admob_top_banner_ad_unit_id">ca-app-pub-2632827933421052/4130268849</string>
+    <string name="googleBanner">ca-app-pub-2632827933421052/4130268849</string>
 </resources>

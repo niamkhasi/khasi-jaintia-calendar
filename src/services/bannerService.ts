@@ -38,14 +38,15 @@ export const BANNER_SETTINGS_DOC_ID = 'banner_carousel';
 
 export const ADMOB_APP_ID = 'ca-app-pub-2632827933421052~6102872245';
 export const ADMOB_TOP_BANNER_AD_UNIT_ID = 'ca-app-pub-2632827933421052/4130268849';
+export const ADSENSE_PUBLISHER_ID = 'ca-pub-2632827933421052';
 
 export const DEFAULT_GOOGLE_ADS_CONFIG: GoogleAdConfig = {
   enabled: true,
-  durationSeconds: 60,
+  durationSeconds: 15,
   appId: ADMOB_APP_ID,
   adUnitId: ADMOB_TOP_BANNER_AD_UNIT_ID,
-  client: ADMOB_APP_ID,
-  slot: ADMOB_TOP_BANNER_AD_UNIT_ID,
+  client: ADSENSE_PUBLISHER_ID,
+  slot: 'auto',
   adTitle: 'Google Ads'
 };
 
@@ -55,7 +56,29 @@ export const DEFAULT_BANNER_CONFIG: BannerConfig = {
   showDurationSeconds: 10,
   startDate: '',
   endDate: '',
-  banners: [],
+  banners: [
+    {
+      id: 'banner_1',
+      imageUrl: '/assets/aistudio/20261104_071930_864cdcde.jpg',
+      title: 'Khasi Jaintia Calendar 2026',
+      enabled: true,
+      durationSeconds: 10
+    },
+    {
+      id: 'banner_2',
+      imageUrl: '/assets/aistudio/IMG-20261103-WA9014_25a4e9f8.jpg',
+      title: '8 Sngi Iew • Traditional Markets',
+      enabled: true,
+      durationSeconds: 10
+    },
+    {
+      id: 'banner_3',
+      imageUrl: '/assets/aistudio/IMG-20261103-WA5997_d7059fe6.jpg',
+      title: 'Cultural Festivals & Holidays',
+      enabled: true,
+      durationSeconds: 10
+    }
+  ],
   googleAds: DEFAULT_GOOGLE_ADS_CONFIG
 };
 
@@ -68,7 +91,8 @@ export function sanitizeBannerConfig(raw: any): BannerConfig {
   }
 
   // Parse banners array and ensure each has valid properties and duration (5s - 60s)
-  const parsedBanners: BannerItem[] = Array.isArray(raw.banners)
+  const hasRawBanners = Array.isArray(raw.banners) && raw.banners.some((b: any) => Boolean(b && b.imageUrl && b.imageUrl.trim()));
+  const parsedBanners: BannerItem[] = hasRawBanners
     ? raw.banners.map((b: any, idx: number) => {
         const itemDuration = Number(b.durationSeconds);
         return {
@@ -82,7 +106,7 @@ export function sanitizeBannerConfig(raw: any): BannerConfig {
             : undefined
         };
       })
-    : [];
+    : DEFAULT_BANNER_CONFIG.banners;
 
   // Parse Google Ads config
   const parsedGoogleAds: GoogleAdConfig = raw.googleAds

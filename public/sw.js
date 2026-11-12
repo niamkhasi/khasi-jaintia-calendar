@@ -46,14 +46,16 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // Bypass Firebase Firestore, Auth, and Google Ads live endpoints so SDK manages its own state
+  // Bypass Firebase Firestore, Auth, and Google AdSense live endpoints so SDK manages its own state
   if (
     url.hostname.includes("firestore.googleapis.com") ||
     url.hostname.includes("identitytoolkit.googleapis.com") ||
     url.hostname.includes("securetoken.googleapis.com") ||
     url.hostname.includes("firebaseio.com") ||
     url.hostname.includes("pagead2.googlesyndication.com") ||
-    url.hostname.includes("googleads.g.doubleclick.net")
+    url.hostname.includes("googleads.g.doubleclick.net") ||
+    url.hostname.includes("adservice.google.com") ||
+    url.hostname.includes("googlesyndication.com")
   ) {
     return;
   }

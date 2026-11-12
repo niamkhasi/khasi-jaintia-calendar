@@ -637,19 +637,19 @@ export const BannerSettingsModal: React.FC<BannerSettingsModalProps> = ({
               When ON, the Google Ads banner shows for <strong>60 seconds</strong> in the rotation loop after Custom Banners 1, 2, and 3. If there are no custom banners, Google Ads runs alone in that place.
             </p>
 
-            {/* Configured Google AdMob IDs */}
+            {/* Configured Google AdSense & AdMob IDs */}
             <div className="p-2.5 rounded-xl bg-blue-50/60 border border-blue-200/80 space-y-1.5">
               <div className="flex items-center justify-between text-[11px]">
-                <span className="font-bold text-blue-950">AdMob APP ID:</span>
+                <span className="font-bold text-blue-950">AdSense Publisher ID:</span>
+                <span className="font-mono text-[10px] text-blue-800 select-all font-semibold">ca-pub-2632827933421052</span>
+              </div>
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="font-bold text-blue-950">AdMob App ID:</span>
                 <span className="font-mono text-[10px] text-blue-800 select-all font-semibold">ca-app-pub-2632827933421052~6102872245</span>
               </div>
               <div className="flex items-center justify-between text-[11px]">
-                <span className="font-bold text-blue-950">Top Banner Ad Unit ID:</span>
-                <span className="font-mono text-[10px] text-blue-800 select-all font-semibold">ca-app-pub-2632827933421052/4130268849</span>
-              </div>
-              <div className="flex items-center justify-between text-[11px]">
-                <span className="font-bold text-blue-950">Banner View ID:</span>
-                <span className="font-mono text-[10px] text-emerald-800 font-bold">@+id/googleBanner</span>
+                <span className="font-bold text-blue-950">Ad Unit / View ID:</span>
+                <span className="font-mono text-[10px] text-emerald-800 font-bold">@+id/googleBanner (auto)</span>
               </div>
             </div>
           </div>

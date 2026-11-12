@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ExternalLink, Clock } from 'lucide-react';
 import { BannerItem, BannerConfig, GoogleAdConfig } from '../services/bannerService';
 
 interface BannerCarouselProps {
@@ -11,11 +10,78 @@ export type CarouselSlide =
   | { type: 'custom'; id: string; banner: BannerItem; durationMs: number }
   | { type: 'google_ad'; id: string; durationMs: number; config: GoogleAdConfig };
 
+/**
+ * Google AdSense Component
+ * Uses publisher client ca-pub-2632827933421052
+ * Matches custom banner dimensions and responsive on mobile
+ */
+const GoogleAdSenseSlide: React.FC = () => {
+  const adRef = useRef<HTMLModElement | null>(null);
+
+  useEffect(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const adsbygoogle = (window as any).adsbygoogle || [];
+        adsbygoogle.push({});
+      }
+    } catch (err) {
+      console.warn('Google AdSense push notice:', err);
+    }
+  }, []);
+
+  return (
+    <div
+      id="googleBanner"
+      className="w-full h-full bg-slate-950 text-white flex items-center justify-center relative overflow-hidden select-none border-y border-amber-400/20"
+    >
+      {/* Background subtle glow effect */}
+      <div className="absolute -right-8 -top-8 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
+      <div className="absolute left-1/4 -bottom-8 w-32 h-32 bg-[#f1c40f]/10 rounded-full blur-2xl pointer-events-none" />
+
+      {/* AdSense ins tag: exact specification */}
+      <div className="w-full h-full flex items-center justify-center relative z-10 overflow-hidden">
+        <ins
+          ref={adRef}
+          className="adsbygoogle"
+          style={{ display: 'block', width: '100%', height: '100%' }}
+          data-ad-client="ca-pub-2632827933421052"
+          data-ad-slot="auto"
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        />
+      </div>
+
+      {/* Clean fallback placeholder visible behind or before live ad renders */}
+      <div className="absolute inset-0 flex items-center justify-between px-3 sm:px-6 pointer-events-none z-0">
+        <div className="flex items-center gap-2.5 sm:gap-4 flex-1 min-w-0 pr-2">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0 shadow-sm">
+            <span className="font-black text-xs text-[#f1c40f]">Ad</span>
+          </div>
+
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-[#f1c40f] text-slate-950 uppercase tracking-wider">
+                Google AdSense
+              </span>
+              <span className="text-[11px] sm:text-xs font-bold text-slate-200 truncate">
+                Sponsored Ad
+              </span>
+            </div>
+            <p className="text-[10px] sm:text-[11px] text-slate-300 truncate mt-0.5 font-medium">
+              ca-pub-2632827933421052 • Responsive Ad
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const BannerCarousel: React.FC<BannerCarouselProps> = ({
   config,
   onAutoDisappear,
 }) => {
-  // 1. Gather all active custom banners (must be enabled & have image)
+  // 1. Gather all active custom banners (Banner 1, Banner 2, Banner 3)
   const customSlides: CarouselSlide[] = (config.banners || [])
     .filter(b => b.enabled !== false && Boolean(b.imageUrl && b.imageUrl.trim()))
     .map((b, idx) => {
@@ -32,29 +98,35 @@ export const BannerCarousel: React.FC<BannerCarouselProps> = ({
       };
     });
 
-  // 2. 4th Box: Google Ads (must be enabled)
-  const googleAdSlide: CarouselSlide[] = (config.googleAds && config.googleAds.enabled)
+  // 2. 4th Slide: Google AdSense Ad (always included in rotation loop)
+  const isGoogleAdEnabled = config.googleAds ? config.googleAds.enabled !== false : true;
+  const googleAdDuration = (config.googleAds && config.googleAds.durationSeconds)
+    ? config.googleAds.durationSeconds * 1000
+    : 15000;
+
+  const googleAdSlide: CarouselSlide[] = isGoogleAdEnabled
     ? [{
         type: 'google_ad',
         id: 'google_ad_slot',
-        durationMs: (config.googleAds.durationSeconds || 60) * 1000,
+        durationMs: googleAdDuration,
         config: config.googleAds
       }]
     : [];
 
-  // All active boxes in loop order: Custom 1 (5s) -> Custom 2 (5s) -> Custom 3 (5s) -> Google Ad (60s)
+  // All active slides in rotation loop:
+  // Banner 1 -> Banner 2 -> Banner 3 -> Google Ad -> Banner 1 again
   const activeSlides: CarouselSlide[] = [...customSlides, ...googleAdSlide];
 
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
 
-  // Auto-switch carousel using each slide's individual duration (5s for custom, 60s for Google Ad)
+  // Auto-switch carousel using each slide's individual duration
   useEffect(() => {
     if (activeSlides.length <= 1) return;
 
     const currentSlide = activeSlides[currentIndex % activeSlides.length];
-    const duration = currentSlide ? currentSlide.durationMs : 5000;
+    const duration = currentSlide ? currentSlide.durationMs : 10000;
 
     const timer = setTimeout(() => {
       setCurrentIndex(prev => (prev + 1) % activeSlides.length);
@@ -63,7 +135,7 @@ export const BannerCarousel: React.FC<BannerCarouselProps> = ({
     return () => clearTimeout(timer);
   }, [currentIndex, activeSlides.length]);
 
-  // If all 4 are OFF, hide whole banner place with View.GONE (no empty space)
+  // If all are OFF, hide whole banner place with View.GONE (no empty space)
   if (activeSlides.length === 0) {
     return null;
   }
@@ -94,7 +166,6 @@ export const BannerCarousel: React.FC<BannerCarouselProps> = ({
   };
 
   const activeIndex = currentIndex % activeSlides.length;
-  const currentSlide = activeSlides[activeIndex] || activeSlides[0];
 
   const handleCustomBannerClick = (banner: BannerItem) => {
     if (banner.link && banner.link.trim()) {
@@ -116,79 +187,47 @@ export const BannerCarousel: React.FC<BannerCarouselProps> = ({
       {/* Banner Container: touches left and right edges like Flipkart */}
       <div className="w-full h-20 sm:h-24 md:h-28 relative overflow-hidden bg-slate-900">
         
-        {/* SLIDE TYPE: 4th Box = GOOGLE ADS (60 seconds) */}
-        {currentSlide.type === 'google_ad' ? (
-          <div 
-            id="googleBanner"
-            data-ad-unit-id={currentSlide.config.adUnitId || 'ca-app-pub-2632827933421052/4130268849'}
-            data-ad-client={currentSlide.config.appId || 'ca-app-pub-2632827933421052~6102872245'}
-            className="w-full h-full bg-gradient-to-r from-slate-950 via-[#0e2a3a] to-slate-900 text-white flex items-center justify-between px-3 sm:px-6 relative overflow-hidden select-none border-y border-amber-400/20"
-          >
-            {/* Background subtle glow effect */}
-            <div className="absolute -right-8 -top-8 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute left-1/4 -bottom-8 w-32 h-32 bg-[#f1c40f]/10 rounded-full blur-2xl pointer-events-none" />
+        {/* Render all slides in rotation loop with smooth cross-fade */}
+        {activeSlides.map((slide, idx) => {
+          const isActive = idx === activeIndex;
 
-            <div className="flex items-center gap-2.5 sm:gap-4 relative z-10 flex-1 min-w-0 pr-2">
-              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0 shadow-md">
-                <span className="font-black text-xs sm:text-sm tracking-tight text-[#f1c40f]">Ads</span>
-              </div>
-
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-[#f1c40f] text-slate-950 uppercase tracking-wider">
-                    Google Ad
-                  </span>
-                  <span className="text-[11px] sm:text-xs font-bold text-slate-100 truncate">
-                    {currentSlide.config.adTitle || 'Promoted Community Listing'}
-                  </span>
-                </div>
-                <p className="text-[10px] sm:text-[11px] text-slate-300 truncate mt-0.5 font-medium">
-                  Reach thousands of customers daily across Khasi & Jaintia Hills.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 relative z-10 shrink-0">
-              <a
-                href="https://wa.me/917005893341?text=Hi%2C%20I%20would%20like%20to%20advertise%20in%20Khasi%20Jaintia%20Calendar%20App"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-gradient-to-r from-[#f1c40f] to-amber-400 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-md transition flex items-center gap-1 cursor-pointer"
+          if (slide.type === 'google_ad') {
+            return (
+              <div
+                key={slide.id}
+                className={`w-full h-full absolute inset-0 transition-opacity duration-500 ${
+                  isActive ? 'opacity-100 pointer-events-auto z-10' : 'opacity-0 pointer-events-none z-0'
+                }`}
               >
-                <span>Advertise</span>
-                <ExternalLink className="w-3 h-3 stroke-[2.5]" />
-              </a>
-
-              {/* 60s rotation countdown badge */}
-              <div className="hidden sm:flex items-center gap-1 px-2 py-1 rounded-lg bg-black/40 border border-white/10 text-[10px] font-mono text-amber-300">
-                <Clock className="w-3 h-3" />
-                <span>60s</span>
+                <GoogleAdSenseSlide />
               </div>
+            );
+          }
+
+          return (
+            <div
+              key={slide.id}
+              onClick={() => handleCustomBannerClick(slide.banner)}
+              className={`w-full h-full absolute inset-0 transition-opacity duration-500 bg-slate-900 ${
+                slide.banner.link ? 'cursor-pointer' : ''
+              } ${isActive ? 'opacity-100 pointer-events-auto z-10' : 'opacity-0 pointer-events-none z-0'}`}
+            >
+              <img
+                src={slide.banner.imageUrl}
+                alt={slide.banner.title || `Khasi Jaintia Promo Banner ${idx + 1}`}
+                className="w-full h-full object-cover rounded-none block"
+                style={{ borderRadius: '0px' }}
+              />
+
+              {/* Optional Title Badge if set */}
+              {slide.banner.title && slide.banner.title.trim() && (
+                <div className="absolute bottom-2 left-3 bg-black/60 backdrop-blur-xs text-white text-[11px] font-bold px-2 py-0.5 rounded-md pointer-events-none shadow-xs">
+                  {slide.banner.title}
+                </div>
+              )}
             </div>
-          </div>
-        ) : (
-          /* SLIDE TYPE: CUSTOM BANNERS 1, 2, 3 (5 seconds each) */
-          <div 
-            onClick={() => handleCustomBannerClick(currentSlide.banner)}
-            className={`w-full h-full relative overflow-hidden bg-slate-900 ${
-              currentSlide.banner.link ? 'cursor-pointer' : ''
-            }`}
-          >
-            <img
-              src={currentSlide.banner.imageUrl}
-              alt={currentSlide.banner.title || `Khasi Jaintia Promo Banner ${activeIndex + 1}`}
-              className="w-full h-full object-cover rounded-none block transition-opacity duration-500"
-              style={{ borderRadius: '0px' }}
-            />
-
-            {/* Optional Title Badge if set */}
-            {currentSlide.banner.title && currentSlide.banner.title.trim() && (
-              <div className="absolute bottom-2 left-3 bg-black/60 backdrop-blur-xs text-white text-[11px] font-bold px-2 py-0.5 rounded-md pointer-events-none shadow-xs">
-                {currentSlide.banner.title}
-              </div>
-            )}
-          </div>
-        )}
+          );
+        })}
 
       </div>
 

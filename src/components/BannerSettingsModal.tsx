@@ -608,9 +608,9 @@ export const BannerSettingsModal: React.FC<BannerSettingsModalProps> = ({
                 </span>
                 <div>
                   <h4 className="font-black text-sm text-slate-900 flex items-center gap-1.5">
-                    <span>Google Ads 4th Box (Dedicated)</span>
-                    <span className="px-2 py-0.2 rounded-full bg-blue-100 text-blue-900 text-[10px] font-bold">
-                      60 Seconds
+                    <span>Monetag Ads 4th Box (Dedicated)</span>
+                    <span className="px-2 py-0.2 rounded-full bg-emerald-100 text-emerald-900 text-[10px] font-bold">
+                      Zone 12249169
                     </span>
                   </h4>
                 </div>
@@ -629,27 +629,27 @@ export const BannerSettingsModal: React.FC<BannerSettingsModalProps> = ({
                   }))}
                   className="sr-only peer"
                 />
-                <div className="w-10 h-5 bg-slate-300 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                <div className="w-10 h-5 bg-slate-300 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
               </label>
             </div>
 
             <p className="text-[11px] text-slate-600 leading-relaxed">
-              When ON, the Google Ads banner shows for <strong>60 seconds</strong> in the rotation loop after Custom Banners 1, 2, and 3. If there are no custom banners, Google Ads runs alone in that place.
+              When ON, the Monetag ad banner rotates in the loop after Custom Banners 1, 2, and 3. If there are no custom banners, it runs in that place.
             </p>
 
-            {/* Configured Google AdSense & AdMob IDs */}
-            <div className="p-2.5 rounded-xl bg-blue-50/60 border border-blue-200/80 space-y-1.5">
+            {/* Configured Monetag & Preserved AdSense IDs */}
+            <div className="p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-200/80 space-y-1.5">
               <div className="flex items-center justify-between text-[11px]">
-                <span className="font-bold text-blue-950">AdSense Publisher ID:</span>
-                <span className="font-mono text-[10px] text-blue-800 select-all font-semibold">ca-pub-2632827933421052</span>
+                <span className="font-bold text-emerald-950">Monetag Zone:</span>
+                <span className="font-mono text-[10px] text-emerald-800 select-all font-bold">12249169 (nap5k.com)</span>
               </div>
               <div className="flex items-center justify-between text-[11px]">
-                <span className="font-bold text-blue-950">AdMob App ID:</span>
-                <span className="font-mono text-[10px] text-blue-800 select-all font-semibold">ca-app-pub-2632827933421052~6102872245</span>
+                <span className="font-bold text-slate-700">AdSense Publisher ID:</span>
+                <span className="font-mono text-[10px] text-slate-500 font-semibold">ca-pub-2632827933421052 (Commented out)</span>
               </div>
               <div className="flex items-center justify-between text-[11px]">
-                <span className="font-bold text-blue-950">Ad Unit / View ID:</span>
-                <span className="font-mono text-[10px] text-emerald-800 font-bold">@+id/googleBanner (auto)</span>
+                <span className="font-bold text-slate-700">Banner View ID:</span>
+                <span className="font-mono text-[10px] text-slate-500 font-bold">@+id/monetagBanner</span>
               </div>
             </div>
           </div>

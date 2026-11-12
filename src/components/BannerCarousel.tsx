@@ -8,67 +8,121 @@ interface BannerCarouselProps {
 
 export type CarouselSlide =
   | { type: 'custom'; id: string; banner: BannerItem; durationMs: number }
-  | { type: 'google_ad'; id: string; durationMs: number; config: GoogleAdConfig };
+  | { type: 'ad'; id: string; durationMs: number; config: GoogleAdConfig };
+
+/*
+ * ============================================================================
+ * GOOGLE ADSENSE COMPONENT (COMMENTED OUT - NOT DELETED AS REQUESTED)
+ * ============================================================================
+ *
+ * const GoogleAdSenseSlide: React.FC = () => {
+ *   const adRef = useRef<HTMLModElement | null>(null);
+ *
+ *   useEffect(() => {
+ *     try {
+ *       if (typeof window !== 'undefined') {
+ *         const adsbygoogle = (window as any).adsbygoogle || [];
+ *         adsbygoogle.push({});
+ *       }
+ *     } catch (err) {
+ *       console.warn('Google AdSense push notice:', err);
+ *     }
+ *   }, []);
+ *
+ *   return (
+ *     <div
+ *       id="googleBanner"
+ *       className="w-full h-full bg-slate-950 text-white flex items-center justify-center relative overflow-hidden select-none border-y border-amber-400/20"
+ *     >
+ *       <div className="w-full h-full flex items-center justify-center relative z-10 overflow-hidden">
+ *         <ins
+ *           ref={adRef}
+ *           className="adsbygoogle"
+ *           style={{ display: 'block', width: '100%', height: '100%' }}
+ *           data-ad-client="ca-pub-2632827933421052"
+ *           data-ad-slot="auto"
+ *           data-ad-format="auto"
+ *           data-full-width-responsive="true"
+ *         />
+ *       </div>
+ *     </div>
+ *   );
+ * };
+ */
 
 /**
- * Google AdSense Component
- * Uses publisher client ca-pub-2632827933421052
- * Matches custom banner dimensions and responsive on mobile
+ * Monetag Ads Banner Slide Component
+ * Zone ID: 12249169
+ * Matches custom banner dimensions, responsive on mobile, rotates together with 3 custom banners
  */
-const GoogleAdSenseSlide: React.FC = () => {
-  const adRef = useRef<HTMLModElement | null>(null);
+const MonetagAdSlide: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     try {
-      if (typeof window !== 'undefined') {
-        const adsbygoogle = (window as any).adsbygoogle || [];
-        adsbygoogle.push({});
+      // User's Monetag script tag execution:
+      // <script>(function(s){s.dataset.zone='12249169',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+      if (typeof document !== 'undefined') {
+        const existingScript = document.querySelector('script[data-zone="12249169"]');
+        if (!existingScript) {
+          (function(s: HTMLScriptElement){
+            s.dataset.zone = '12249169';
+            s.src = 'https://nap5k.com/tag.min.js';
+          })([document.documentElement, document.body].filter(Boolean).pop()!.appendChild(document.createElement('script')));
+        }
       }
     } catch (err) {
-      console.warn('Google AdSense push notice:', err);
+      console.warn('Monetag tag execution:', err);
     }
   }, []);
 
   return (
     <div
-      id="googleBanner"
+      id="monetagBanner"
+      ref={containerRef}
       className="w-full h-full bg-slate-950 text-white flex items-center justify-center relative overflow-hidden select-none border-y border-amber-400/20"
     >
       {/* Background subtle glow effect */}
-      <div className="absolute -right-8 -top-8 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
+      <div className="absolute -right-8 -top-8 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
       <div className="absolute left-1/4 -bottom-8 w-32 h-32 bg-[#f1c40f]/10 rounded-full blur-2xl pointer-events-none" />
 
-      {/* AdSense ins tag: exact specification */}
-      <div className="w-full h-full flex items-center justify-center relative z-10 overflow-hidden">
-        <ins
-          ref={adRef}
-          className="adsbygoogle"
-          style={{ display: 'block', width: '100%', height: '100%' }}
-          data-ad-client="ca-pub-2632827933421052"
-          data-ad-slot="auto"
-          data-ad-format="auto"
-          data-full-width-responsive="true"
-        />
+      {/* Monetag Ad Zone Container */}
+      <div
+        id="monetag-zone-12249169"
+        data-zone="12249169"
+        className="w-full h-full flex items-center justify-center relative z-10 overflow-hidden"
+      >
+        {/*
+          Google AdSense Code (Commented out - not deleted as requested):
+          <ins
+            className="adsbygoogle"
+            style={{ display: 'block', width: '100%', height: '100%' }}
+            data-ad-client="ca-pub-2632827933421052"
+            data-ad-slot="auto"
+            data-ad-format="auto"
+            data-full-width-responsive="true"
+          />
+        */}
       </div>
 
-      {/* Clean fallback placeholder visible behind or before live ad renders */}
+      {/* Clean fallback banner layout matching custom banners */}
       <div className="absolute inset-0 flex items-center justify-between px-3 sm:px-6 pointer-events-none z-0">
         <div className="flex items-center gap-2.5 sm:gap-4 flex-1 min-w-0 pr-2">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0 shadow-sm">
-            <span className="font-black text-xs text-[#f1c40f]">Ad</span>
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#f1c40f] to-amber-500 text-slate-950 flex items-center justify-center shrink-0 shadow-sm font-black">
+            <span className="text-xs">Ad</span>
           </div>
 
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 sm:gap-2">
               <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-[#f1c40f] text-slate-950 uppercase tracking-wider">
-                Google AdSense
+                Sponsored
               </span>
               <span className="text-[11px] sm:text-xs font-bold text-slate-200 truncate">
-                Sponsored Ad
+                Monetag Partner
               </span>
             </div>
-            <p className="text-[10px] sm:text-[11px] text-slate-300 truncate mt-0.5 font-medium">
-              ca-pub-2632827933421052 • Responsive Ad
+            <p className="text-[10px] sm:text-[11px] text-slate-400 truncate mt-0.5 font-medium">
+              Zone 12249169 • Khasi Jaintia Calendar
             </p>
           </div>
         </div>
@@ -98,24 +152,24 @@ export const BannerCarousel: React.FC<BannerCarouselProps> = ({
       };
     });
 
-  // 2. 4th Slide: Google AdSense Ad (always included in rotation loop)
-  const isGoogleAdEnabled = config.googleAds ? config.googleAds.enabled !== false : true;
-  const googleAdDuration = (config.googleAds && config.googleAds.durationSeconds)
+  // 2. 4th Slide: Monetag Ad (keeps ON/OFF working identically via config.googleAds.enabled)
+  const isAdEnabled = config.googleAds ? config.googleAds.enabled !== false : true;
+  const adDuration = (config.googleAds && config.googleAds.durationSeconds)
     ? config.googleAds.durationSeconds * 1000
     : 15000;
 
-  const googleAdSlide: CarouselSlide[] = isGoogleAdEnabled
+  const adSlide: CarouselSlide[] = isAdEnabled
     ? [{
-        type: 'google_ad',
-        id: 'google_ad_slot',
-        durationMs: googleAdDuration,
+        type: 'ad',
+        id: 'monetag_ad_slot',
+        durationMs: adDuration,
         config: config.googleAds
       }]
     : [];
 
   // All active slides in rotation loop:
-  // Banner 1 -> Banner 2 -> Banner 3 -> Google Ad -> Banner 1 again
-  const activeSlides: CarouselSlide[] = [...customSlides, ...googleAdSlide];
+  // Banner 1 -> Banner 2 -> Banner 3 -> Monetag Ad -> Banner 1 again
+  const activeSlides: CarouselSlide[] = [...customSlides, ...adSlide];
 
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const touchStartX = useRef<number | null>(null);
@@ -191,7 +245,7 @@ export const BannerCarousel: React.FC<BannerCarouselProps> = ({
         {activeSlides.map((slide, idx) => {
           const isActive = idx === activeIndex;
 
-          if (slide.type === 'google_ad') {
+          if (slide.type === 'ad') {
             return (
               <div
                 key={slide.id}
@@ -199,7 +253,10 @@ export const BannerCarousel: React.FC<BannerCarouselProps> = ({
                   isActive ? 'opacity-100 pointer-events-auto z-10' : 'opacity-0 pointer-events-none z-0'
                 }`}
               >
-                <GoogleAdSenseSlide />
+                <MonetagAdSlide />
+                {/*
+                  <GoogleAdSenseSlide /> (Commented out - not deleted as requested)
+                */}
               </div>
             );
           }
@@ -235,22 +292,22 @@ export const BannerCarousel: React.FC<BannerCarouselProps> = ({
       {activeSlides.length > 1 && (
         <div className="absolute bottom-1 right-3 flex items-center gap-1.5 bg-black/50 px-2 py-0.5 rounded-full backdrop-blur-xs pointer-events-none z-20">
           {activeSlides.map((s, idx) => {
-            const isGoogleAd = s.type === 'google_ad';
+            const isAd = s.type === 'ad';
             const isActive = idx === activeIndex;
             return (
               <span
                 key={s.id || idx}
                 className={`transition-all duration-300 rounded-full flex items-center justify-center ${
                   isActive
-                    ? isGoogleAd
-                      ? 'w-7 px-1 h-3.5 bg-blue-500 text-[8px] font-black text-white'
+                    ? isAd
+                      ? 'w-7 px-1 h-3.5 bg-emerald-500 text-[8px] font-black text-white'
                       : 'w-4 h-1.5 bg-[#f1c40f]'
-                    : isGoogleAd
-                    ? 'w-2 h-2 bg-blue-400/60'
+                    : isAd
+                    ? 'w-2 h-2 bg-emerald-400/60'
                     : 'w-1.5 h-1.5 bg-white/60'
                 }`}
               >
-                {isActive && isGoogleAd ? 'Ad' : null}
+                {isActive && isAd ? 'Ad' : null}
               </span>
             );
           })}

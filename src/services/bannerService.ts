@@ -38,7 +38,10 @@ export const BANNER_SETTINGS_DOC_ID = 'banner_carousel';
 
 export const ADMOB_APP_ID = 'ca-app-pub-2632827933421052~6102872245';
 export const ADMOB_TOP_BANNER_AD_UNIT_ID = 'ca-app-pub-2632827933421052/4130268849';
+// Google AdSense Publisher ID (Preserved / commented out as requested)
 export const ADSENSE_PUBLISHER_ID = 'ca-pub-2632827933421052';
+// Monetag Zone ID
+export const MONETAG_ZONE_ID = '12249169';
 
 export const DEFAULT_GOOGLE_ADS_CONFIG: GoogleAdConfig = {
   enabled: true,
@@ -46,8 +49,8 @@ export const DEFAULT_GOOGLE_ADS_CONFIG: GoogleAdConfig = {
   appId: ADMOB_APP_ID,
   adUnitId: ADMOB_TOP_BANNER_AD_UNIT_ID,
   client: ADSENSE_PUBLISHER_ID,
-  slot: 'auto',
-  adTitle: 'Google Ads'
+  slot: MONETAG_ZONE_ID,
+  adTitle: 'Monetag Ads'
 };
 
 export const DEFAULT_BANNER_CONFIG: BannerConfig = {

@@ -646,11 +646,11 @@ export const CustomerCareModal: React.FC<CustomerCareModalProps> = ({
                     <span>Privacy Policy</span>
                   </h4>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-950 font-semibold">
-                    AdMob &amp; Data Policy
+                    Effective Nov 13, 2026
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                  Review our privacy commitments and information regarding Google AdMob advertising.
+                  Review our privacy commitments, in-app purchases, and advertising policy.
                 </p>
               </div>
             </button>

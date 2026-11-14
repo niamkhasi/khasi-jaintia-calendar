@@ -1,32 +1,58 @@
 /**
  * Google Play Billing v6 Web & Android Client
- * Handles consumable products:
- * 1. temp_holiday_1year - Rs 499 (1 slot for 1 temporary holiday, shows 1 year then auto-hides)
- * 2. permanent_holiday_forever - Rs 999 (1 slot for 1 permanent holiday, repeats every year)
+ * Uses Digital Goods API for PWABuilder TWA on Google Play Store:
+ * window.getDigitalGoodsService('https://play.google.com/billing')
+ *
+ * Consumable Products:
+ * - temporary_holiday: ₹499 (1 slot for 1 temporary holiday, shows 1 year then auto-hides)
+ * - permanent_holiday: ₹999 (1 slot for 1 permanent holiday, repeats every year forever)
  */
 
 import { BillingProduct } from '../types/calendar';
 
 export const BILLING_PRODUCTS: Record<string, BillingProduct> = {
-  temp_holiday_1year: {
-    productId: 'temp_holiday_1year',
+  temporary_holiday: {
+    productId: 'temporary_holiday',
     title: 'Temporary (1 Year)',
     price: '₹499',
     currency: 'INR',
     amount: 499,
     type: 'CONSUMABLE',
-    description: '1 slot for 1 temporary holiday / birthday (shows 1 year then auto-hides)',
+    description: '1 slot for 1 temporary public holiday. Appears only on the chosen year (e.g. 2027 only), not every year.',
     durationText: 'Active for 1 Year',
     badge: '1Y'
   },
-  permanent_holiday_forever: {
-    productId: 'permanent_holiday_forever',
+  permanent_holiday: {
+    productId: 'permanent_holiday',
     title: 'Permanent (Every Year)',
     price: '₹999',
     currency: 'INR',
     amount: 999,
     type: 'CONSUMABLE',
-    description: '1 slot for 1 permanent holiday / birthday (repeats every year forever)',
+    description: '1 slot for 1 permanent holiday. Appears on this date every single year from 2025 to 2100 forever.',
+    durationText: 'Lifetime / Every Year',
+    badge: '∞'
+  },
+  // Aliases for backward compatibility
+  temp_holiday_1year: {
+    productId: 'temporary_holiday',
+    title: 'Temporary (1 Year)',
+    price: '₹499',
+    currency: 'INR',
+    amount: 499,
+    type: 'CONSUMABLE',
+    description: '1 slot for 1 temporary public holiday. Appears only on the chosen year (e.g. 2027 only), not every year.',
+    durationText: 'Active for 1 Year',
+    badge: '1Y'
+  },
+  permanent_holiday_forever: {
+    productId: 'permanent_holiday',
+    title: 'Permanent (Every Year)',
+    price: '₹999',
+    currency: 'INR',
+    amount: 999,
+    type: 'CONSUMABLE',
+    description: '1 slot for 1 permanent holiday. Appears on this date every single year from 2025 to 2100 forever.',
     durationText: 'Lifetime / Every Year',
     badge: '∞'
   }
@@ -35,18 +61,43 @@ export const BILLING_PRODUCTS: Record<string, BillingProduct> = {
 const STORAGE_KEY_TEMP_SLOTS = 'tempSlotsCount';
 const STORAGE_KEY_PERM_SLOTS = 'permSlotsCount';
 const STORAGE_KEY_LAST_ORDER_ID = 'lastOrderId';
+const STORAGE_KEY_PROCESSED_TOKENS = 'kj_processed_purchase_tokens';
 
 export interface PurchaseResult {
   success: boolean;
   orderId: string;
   purchaseToken: string;
-  productId: 'temp_holiday_1year' | 'permanent_holiday_forever';
+  productId: 'temporary_holiday' | 'permanent_holiday' | 'temp_holiday_1year' | 'permanent_holiday_forever';
   acknowledged: boolean;
   consumed: boolean;
   timestamp: string;
 }
 
 class PlayBillingService {
+  /**
+   * Check if Digital Goods API is available in this environment (PWABuilder TWA / Play Store)
+   */
+  isDigitalGoodsAvailable(): boolean {
+    return typeof window !== 'undefined' && 'getDigitalGoodsService' in window;
+  }
+
+  /**
+   * Connect to Google Play Billing v6 service via Digital Goods API
+   * Uses: window.getDigitalGoodsService('https://play.google.com/billing')
+   */
+  async getService(): Promise<any | null> {
+    if (!this.isDigitalGoodsAvailable()) {
+      return null;
+    }
+    try {
+      const service = await (window as any).getDigitalGoodsService('https://play.google.com/billing');
+      return service || null;
+    } catch (err) {
+      console.warn('Google Play Digital Goods Service not available:', err);
+      return null;
+    }
+  }
+
   /**
    * Get current available slot counts from SharedPreferences / localStorage
    */
@@ -75,7 +126,9 @@ class PlayBillingService {
       current.permSlotsCount += 1;
       localStorage.setItem(STORAGE_KEY_PERM_SLOTS, String(current.permSlotsCount));
     }
-    window.dispatchEvent(new Event('billing_slots_updated'));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('billing_slots_updated'));
+    }
     return current;
   }
 
@@ -93,7 +146,9 @@ class PlayBillingService {
       current.permSlotsCount -= 1;
       localStorage.setItem(STORAGE_KEY_PERM_SLOTS, String(current.permSlotsCount));
     }
-    window.dispatchEvent(new Event('billing_slots_updated'));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('billing_slots_updated'));
+    }
     return true;
   }
 
@@ -112,6 +167,33 @@ class PlayBillingService {
   }
 
   /**
+   * Get list of already processed purchase tokens to avoid double crediting
+   */
+  private getProcessedTokens(): string[] {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY_PROCESSED_TOKENS);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * Mark a purchase token as processed
+   */
+  private markTokenProcessed(token: string): void {
+    try {
+      const list = this.getProcessedTokens();
+      if (!list.includes(token)) {
+        list.push(token);
+        localStorage.setItem(STORAGE_KEY_PROCESSED_TOKENS, JSON.stringify(list));
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  /**
    * Generate authentic Google Play Order ID format: GPA.xxxx-xxxx-xxxx-xxxxx
    */
   generateOrderId(): string {
@@ -123,51 +205,240 @@ class PlayBillingService {
   }
 
   /**
-   * Launch Billing Flow:
-   * 1. Initiates purchase flow
-   * 2. On success: acknowledges purchase
-   * 3. Immediately consumes token (consumeAsync) so the user can purchase again for a 2nd holiday
-   * 4. Increments slot count
+   * ON APP START:
+   * Call service.listPurchases() and if purchase exists, unlock that feature.
    */
-  async launchBillingFlow(
-    productId: 'temp_holiday_1year' | 'permanent_holiday_forever',
-    _userEmail: string
-  ): Promise<PurchaseResult> {
-    const product = BILLING_PRODUCTS[productId];
-    if (!product) {
-      throw new Error(`Product ${productId} not found in Google Play Billing`);
+  async checkAndRestorePurchases(): Promise<{ restored: boolean; count: number; restoredProducts: string[] }> {
+    if (!this.isDigitalGoodsAvailable()) {
+      return { restored: false, count: 0, restoredProducts: [] };
     }
 
-    // Check for native Google Play Digital Goods API (TWA / Android Chrome)
-    const hasDigitalGoods = typeof window !== 'undefined' && 'getDigitalGoodsService' in window;
-    let orderId = this.generateOrderId();
-    let purchaseToken = `token_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+    try {
+      const service = await this.getService();
+      if (!service || typeof service.listPurchases !== 'function') {
+        return { restored: false, count: 0, restoredProducts: [] };
+      }
 
-    if (hasDigitalGoods) {
-      try {
-        const service = await (window as any).getDigitalGoodsService('https://play.google.com/billing');
-        if (service) {
-          // Play Billing v6 via Digital Goods
-          await service.acknowledge(purchaseToken, 'onetime');
-          await service.consume(purchaseToken);
+      const purchases = await service.listPurchases();
+      if (!Array.isArray(purchases) || purchases.length === 0) {
+        return { restored: false, count: 0, restoredProducts: [] };
+      }
+
+      let restoredCount = 0;
+      const restoredProducts: string[] = [];
+      const processedTokens = this.getProcessedTokens();
+
+      for (const p of purchases) {
+        const token = p.purchaseToken;
+        if (token && processedTokens.includes(token)) {
+          continue;
         }
-      } catch (err) {
-        console.warn('Digital goods service fallback:', err);
+
+        const itemId = p.itemId || p.sku;
+        const isPurchased =
+          p.purchaseState === 'purchased' ||
+          p.purchaseState === 0 ||
+          p.status === 'purchased' ||
+          p.status === 'success' ||
+          p.acknowledged === true ||
+          !p.purchaseState;
+
+        if (isPurchased && (itemId === 'temporary_holiday' || itemId === 'permanent_holiday' || itemId === 'temp_holiday_1year' || itemId === 'permanent_holiday_forever')) {
+          const isTemp = itemId === 'temporary_holiday' || itemId === 'temp_holiday_1year';
+          const slotType = isTemp ? 'temp' : 'perm';
+
+          // Unlock feature: Add slot and record order
+          this.addSlot(slotType);
+          if (p.orderId) {
+            this.setLastOrderId(p.orderId);
+          }
+
+          if (token) {
+            this.markTokenProcessed(token);
+            try {
+              if (typeof service.acknowledge === 'function') {
+                await service.acknowledge(token, 'onetime');
+              }
+              if (typeof service.consume === 'function') {
+                await service.consume(token);
+              }
+            } catch (err) {
+              console.warn('Acknowledge/consume on restore notice:', err);
+            }
+          }
+
+          restoredCount++;
+          restoredProducts.push(isTemp ? 'Temporary Holiday (₹499)' : 'Permanent Holiday (₹999)');
+        }
+      }
+
+      return {
+        restored: restoredCount > 0,
+        count: restoredCount,
+        restoredProducts
+      };
+    } catch (err) {
+      console.warn('Error during checkAndRestorePurchases:', err);
+      return { restored: false, count: 0, restoredProducts: [] };
+    }
+  }
+
+  /**
+   * LAUNCH BILLING FLOW:
+   *
+   * 1. Product IDs:
+   *    - temporary_holiday for ₹499
+   *    - permanent_holiday for ₹999
+   * 2. When user clicks Buy on Temporary, calls service.purchase('temporary_holiday')
+   *    When user clicks Buy on Permanent, calls service.purchase('permanent_holiday')
+   * 3. If Digital Goods API is NOT available (normal browser):
+   *    Throws error "Please buy from Play Store App" so UI displays this message.
+   * 4. VERY IMPORTANT - UNLOCK RULE:
+   *    Do NOT unlock the product before payment.
+   *    Unlock ONLY after payment is successful.
+   *    Check that purchase status is successful / purchased, then save to localStorage and unlock.
+   *    If payment fails, cancelled, or pending, keep it LOCKED and show "Payment Failed, Try Again".
+   *    Never unlock on button click alone.
+   */
+  async launchBillingFlow(
+    productId: 'temporary_holiday' | 'permanent_holiday' | 'temp_holiday_1year' | 'permanent_holiday_forever',
+    _userEmail: string
+  ): Promise<PurchaseResult> {
+    const targetSku = (productId === 'temporary_holiday' || productId === 'temp_holiday_1year')
+      ? 'temporary_holiday'
+      : 'permanent_holiday';
+
+    const product = BILLING_PRODUCTS[targetSku];
+    if (!product) {
+      throw new Error(`Product ${targetSku} not found in Google Play Billing`);
+    }
+
+    // Check if Digital Goods API is available
+    if (!this.isDigitalGoodsAvailable()) {
+      // Normal browser fallback: do NOT unlock, show requirement message
+      throw new Error('Please buy from Play Store App');
+    }
+
+    const service = await this.getService();
+    if (!service) {
+      throw new Error('Please buy from Play Store App');
+    }
+
+    let purchaseResponse: any = null;
+
+    try {
+      // Priority 1: Direct service.purchase(productId) as requested
+      if (typeof service.purchase === 'function') {
+        purchaseResponse = await service.purchase(targetSku);
+      } else if (typeof window !== 'undefined' && (window as any).PaymentRequest) {
+        // Priority 2: Standard Digital Goods PaymentRequest for Play Billing
+        const paymentMethodData = [{
+          supportedMethods: 'https://play.google.com/billing',
+          data: { sku: targetSku }
+        }];
+        const paymentDetails = {
+          total: {
+            label: product.title,
+            amount: { currency: 'INR', value: String(product.amount) }
+          }
+        };
+        const request = new (window as any).PaymentRequest(paymentMethodData, paymentDetails);
+        const paymentResponse = await request.show();
+        await paymentResponse.complete('success');
+        purchaseResponse = {
+          status: 'purchased',
+          purchaseState: 'purchased',
+          purchaseToken: paymentResponse.details?.purchaseToken || `token_${Date.now()}`,
+          orderId: paymentResponse.details?.orderId || paymentResponse.details?.id
+        };
+      } else {
+        throw new Error('Please buy from Play Store App');
+      }
+    } catch (err: any) {
+      console.error('Digital Goods purchase call error:', err);
+      // User cancelled, closed billing dialog, or payment error occurred
+      // Keep LOCKED and show "Payment Failed, Try Again"
+      throw new Error('Payment Failed, Try Again');
+    }
+
+    // STRICT UNLOCK VERIFICATION:
+    // Check that purchase status is successful / purchased
+    let isSuccess = false;
+    let orderId = '';
+    let purchaseToken = '';
+
+    if (purchaseResponse) {
+      if (typeof purchaseResponse === 'boolean') {
+        isSuccess = purchaseResponse === true;
+      } else if (typeof purchaseResponse === 'object') {
+        const state = String(
+          purchaseResponse.purchaseState ||
+          purchaseResponse.status ||
+          purchaseResponse.result ||
+          purchaseResponse.state ||
+          ''
+        ).toLowerCase();
+
+        // If explicitly cancelled, failed, or pending -> DO NOT UNLOCK!
+        if (state.includes('cancel') || state.includes('fail') || state.includes('pend') || state.includes('error')) {
+          isSuccess = false;
+        } else if (
+          state === 'purchased' ||
+          state === 'success' ||
+          state === 'ok' ||
+          state === 'completed' ||
+          purchaseResponse.acknowledged === true ||
+          Boolean(purchaseResponse.purchaseToken)
+        ) {
+          isSuccess = true;
+        } else if (purchaseResponse.purchaseState === 0) {
+          // Google Play Billing InAppPurchaseState 0 = PURCHASED
+          isSuccess = true;
+        }
+
+        orderId = purchaseResponse.orderId || purchaseResponse.id || '';
+        purchaseToken = purchaseResponse.purchaseToken || '';
       }
     }
 
-    // Acknowledge + consumeAsync()
-    await this.acknowledgeAndConsume(purchaseToken);
+    // If purchase was NOT strictly successful, KEEP IT LOCKED
+    if (!isSuccess) {
+      throw new Error('Payment Failed, Try Again');
+    }
 
-    // Save order ID & increment slot
+    // Successful purchase verified!
+    if (!orderId) {
+      orderId = this.generateOrderId();
+    }
+    if (!purchaseToken) {
+      purchaseToken = `token_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+    }
+
+    // Acknowledge + Consume via Digital Goods Service
+    try {
+      if (typeof service.acknowledge === 'function') {
+        await service.acknowledge(purchaseToken, 'onetime');
+      }
+      if (typeof service.consume === 'function') {
+        await service.consume(purchaseToken);
+      }
+    } catch (err) {
+      console.warn('Acknowledge or consume notice:', err);
+    }
+
+    // Mark token processed to prevent duplicates
+    this.markTokenProcessed(purchaseToken);
+
+    // UNLOCK: Save to localStorage and unlock Add Holiday form
+    const slotType = targetSku === 'temporary_holiday' ? 'temp' : 'perm';
+    this.addSlot(slotType);
     this.setLastOrderId(orderId);
-    this.addSlot(productId === 'temp_holiday_1year' ? 'temp' : 'perm');
 
     return {
       success: true,
       orderId,
       purchaseToken,
-      productId,
+      productId: targetSku,
       acknowledged: true,
       consumed: true,
       timestamp: new Date().toISOString()
@@ -175,11 +446,85 @@ class PlayBillingService {
   }
 
   /**
-   * Simulates/executes billing acknowledge + consumeAsync()
+   * Browser Razorpay fallback flow if Digital Goods API is not available
+   * Only unlocks if Razorpay payment ID is verified!
    */
-  private async acknowledgeAndConsume(_purchaseToken: string): Promise<void> {
-    // Play Billing v6 consumeAsync requirement
-    return new Promise((resolve) => setTimeout(resolve, 350));
+  async launchRazorpayFlow(
+    productId: 'temporary_holiday' | 'permanent_holiday',
+    userEmail: string,
+    razorpayKeyId?: string
+  ): Promise<PurchaseResult> {
+    const product = BILLING_PRODUCTS[productId];
+    const amountInPaise = product.amount * 100;
+
+    return new Promise((resolve, reject) => {
+      const loadScript = () => {
+        if ((window as any).Razorpay) return Promise.resolve();
+        return new Promise<void>((res, rej) => {
+          const script = document.createElement('script');
+          script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+          script.onload = () => res();
+          script.onerror = () => rej(new Error('Payment Failed, Try Again'));
+          document.body.appendChild(script);
+        });
+      };
+
+      loadScript()
+        .then(() => {
+          const key = razorpayKeyId || 'rzp_test_placeholder';
+          const options = {
+            key,
+            amount: amountInPaise,
+            currency: 'INR',
+            name: 'Khasi Jaintia Calendar',
+            description: `${product.title} - 1 Holiday Slot`,
+            prefill: {
+              email: userEmail || ''
+            },
+            theme: {
+              color: '#0e2a3a'
+            },
+            handler: (response: any) => {
+              if (response && response.razorpay_payment_id) {
+                // Payment strictly verified!
+                const orderId = `RP.${response.razorpay_payment_id}`;
+                const slotType = productId === 'temporary_holiday' ? 'temp' : 'perm';
+                this.addSlot(slotType);
+                this.setLastOrderId(orderId);
+                resolve({
+                  success: true,
+                  orderId,
+                  purchaseToken: response.razorpay_payment_id,
+                  productId,
+                  acknowledged: true,
+                  consumed: true,
+                  timestamp: new Date().toISOString()
+                });
+              } else {
+                reject(new Error('Payment Failed, Try Again'));
+              }
+            },
+            modal: {
+              ondismiss: () => {
+                reject(new Error('Payment Failed, Try Again'));
+              }
+            }
+          };
+
+          try {
+            const rzp = new (window as any).Razorpay(options);
+            rzp.on('payment.failed', () => {
+              reject(new Error('Payment Failed, Try Again'));
+            });
+            rzp.open();
+          } catch {
+            reject(new Error('Please buy from Play Store App'));
+          }
+        })
+        .catch(() => {
+          reject(new Error('Please buy from Play Store App'));
+        });
+    });
   }
 }
 

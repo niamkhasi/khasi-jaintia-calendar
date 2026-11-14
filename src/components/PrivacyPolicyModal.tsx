@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, ShieldCheck, ExternalLink, Mail, CheckCircle2 } from 'lucide-react';
+import { X, ShieldCheck, Mail, CheckCircle2, CreditCard, Sparkles, AlertCircle, HeartHandshake } from 'lucide-react';
 
 interface PrivacyPolicyModalProps {
   onClose: () => void;
@@ -36,82 +36,200 @@ export const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({ onClose 
             >
               Privacy Policy for Khasi Jaintia Calendar
             </h2>
-            <p className="text-xs text-amber-300 font-semibold mt-1">
-              Last updated: 7 November 2026
+            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-amber-300 font-semibold mt-1.5">
+              <span>Effective Date: November 13, 2026</span>
+              <span>•</span>
+              <span>Last Updated: November 13, 2026</span>
+            </div>
+            <p className="text-xs text-slate-300 font-medium mt-1">
+              Developer: <strong className="text-white">Ieij Iala Ka Jong</strong>
             </p>
           </div>
         </div>
 
         {/* Scrollable Privacy Policy Content */}
-        <div className="p-5 sm:p-7 overflow-y-auto space-y-5 text-slate-800 text-sm leading-relaxed bg-slate-50/70">
+        <div className="p-5 sm:p-7 overflow-y-auto space-y-4 text-slate-800 text-sm leading-relaxed bg-slate-50/70">
           
-          {/* Section 1: Zero Personal Information Collection */}
+          {/* Section 1: Information We Do NOT Collect Directly */}
           <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
               <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
-                No Personal Information Collected
+                1. Information We Do NOT Collect Directly
               </h3>
             </div>
-            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed font-medium">
-              We do not collect any personal information like name, phone number, email, photos, or location.
+            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
+              We do NOT directly collect, store, or sell your name, email address, phone number, contacts, photos or files. We do NOT sell your personal data.
             </p>
           </div>
 
-          {/* Section 2: Google AdMob */}
+          {/* Section 2: Holiday Data You Create */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-amber-500 shrink-0" />
+              <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
+                2. Holiday Data You Create
+              </h3>
+            </div>
+            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
+              When you add a Temporary Holiday or Permanent Holiday in Khasi Jaintia Calendar, that information is stored ONLY on your own device. We cannot see your holidays. If you clear app data or uninstall the app, your holiday data will be deleted.
+            </p>
+          </div>
+
+          {/* Section 3: Payments and In-App Purchases */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2.5">
+            <div className="flex items-center gap-2">
+              <CreditCard className="w-5 h-5 text-blue-600 shrink-0" />
+              <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
+                3. Payments and In-App Purchases
+              </h3>
+            </div>
+            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
+              Our app offers two consumable in-app products:
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
+              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800">
+                <span className="font-bold text-[#0e2a3a] block">Temporary Holiday</span>
+                <span className="text-slate-600">₹499 — 1 Slot = 1 Temporary Holiday</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800">
+                <span className="font-bold text-[#0e2a3a] block">Permanent Holiday</span>
+                <span className="text-slate-600">₹999 — 1 Slot = 1 Permanent Holiday</span>
+              </div>
+            </div>
+            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed pt-1">
+              All payments are processed securely by Google Play Billing. We do NOT collect, see, or store your card, UPI ID, bank account, or any payment details.
+            </p>
+          </div>
+
+          {/* Section 4: Advertising - Generic For Lifetime */}
           <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
             <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
-              Google AdMob Integration
+              4. Advertising - Generic For Lifetime
             </h3>
             <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
-              Our app uses Google AdMob to show ads. Google may collect:
+              Our app may show ads. We currently use Monetag to show ads. We may change, add, or remove any advertising partner at any time in the future without changing this policy.
             </p>
-            <ul className="space-y-2 pl-2">
+            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed font-semibold text-slate-900">
+              Our current and any future advertising partners may collect and use:
+            </p>
+            <ul className="space-y-1.5 pl-2">
               <li className="flex items-center gap-2 text-xs sm:text-sm text-slate-800 font-medium">
                 <span className="w-2 h-2 rounded-full bg-blue-600 shrink-0" />
-                <span>Device ID</span>
+                <span>Device ID / Advertising ID</span>
               </li>
               <li className="flex items-center gap-2 text-xs sm:text-sm text-slate-800 font-medium">
                 <span className="w-2 h-2 rounded-full bg-blue-600 shrink-0" />
-                <span>Advertising ID</span>
+                <span>Device model, OS version, language, IP address</span>
               </li>
               <li className="flex items-center gap-2 text-xs sm:text-sm text-slate-800 font-medium">
                 <span className="w-2 h-2 rounded-full bg-blue-600 shrink-0" />
-                <span>App usage to show relevant ads</span>
+                <span>Approximate location (city level, not exact GPS)</span>
+              </li>
+              <li className="flex items-center gap-2 text-xs sm:text-sm text-slate-800 font-medium">
+                <span className="w-2 h-2 rounded-full bg-blue-600 shrink-0" />
+                <span>App usage and ad interaction data to show relevant ads and prevent fraud</span>
               </li>
             </ul>
-
-            <div className="pt-2">
-              <p className="text-xs sm:text-sm text-slate-700">
-                You can learn more here:{' '}
-                <a
-                  href="https://policies.google.com/privacy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-bold text-blue-700 hover:text-blue-900 underline inline-flex items-center gap-1"
-                >
-                  <span>https://policies.google.com/privacy</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              </p>
+            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed pt-1">
+              We do NOT provide your name, email, or phone number to any advertising partner.
+            </p>
+            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 font-medium">
+              You can control ads anytime: <strong>Android Settings &gt; Privacy &gt; Ads &gt; Delete Advertising ID</strong>, or turn off <strong>&quot;Personalized Ads&quot;</strong>.
             </div>
           </div>
 
-          {/* Section 3: Contact Us */}
+          {/* Section 5: Third-Party Services */}
           <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
             <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
-              Contact Us
+              5. Third-Party Services
             </h3>
-            <p className="text-xs sm:text-sm text-slate-700">
-              If you have any question, contact us:{' '}
-              <a
-                href="mailto:muniphawa@gmail.com"
-                className="font-bold text-emerald-700 hover:text-emerald-900 underline inline-flex items-center gap-1"
-              >
-                <Mail className="w-3.5 h-3.5" />
-                <span>muniphawa@gmail.com</span>
-              </a>
+            <ul className="space-y-1.5 pl-2 text-xs sm:text-sm text-slate-700">
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-500 shrink-0" />
+                <span><strong>Google Play Services</strong> - For in-app purchases</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-500 shrink-0" />
+                <span><strong>Monetag and/or any other Advertising Partner</strong> - For showing ads (current or future)</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Section 6: Data Safety */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+              <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
+                6. Data Safety
+              </h3>
+            </div>
+            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
+              <strong>Data collected by us:</strong> None. <strong>Data collected by advertising partners:</strong> Device ID, Advertising ID, approximate location, app interaction - for ads only. <strong>Data stored by us:</strong> Only on your device.
             </p>
+          </div>
+
+          {/* Section 7: Children's Privacy */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+            <div className="flex items-center gap-2">
+              <HeartHandshake className="w-5 h-5 text-purple-600 shrink-0" />
+              <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
+                7. Children&apos;s Privacy
+              </h3>
+            </div>
+            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
+              Our app is safe for all ages. We do not knowingly collect personal information from children.
+            </p>
+          </div>
+
+          {/* Section 8: Your Rights */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+            <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
+              8. Your Rights
+            </h3>
+            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
+              You can delete your holiday data anytime by clearing app data or uninstalling the app. You can opt-out of personalized ads from device settings.
+            </p>
+          </div>
+
+          {/* Section 9: Changes to This Policy */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
+              <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
+                9. Changes to This Policy
+              </h3>
+            </div>
+            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
+              If we change our advertising partner in future, this policy will still apply because it is generic and covers any current or future partner.
+            </p>
+          </div>
+
+          {/* Section 10: Contact Us */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+            <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
+              10. Contact Us
+            </h3>
+            <div className="text-xs sm:text-sm text-slate-700 space-y-1">
+              <p className="flex items-center gap-1.5">
+                <span>Email:</span>
+                <a
+                  href="mailto:muniphawa@gmail.com"
+                  className="font-bold text-emerald-700 hover:text-emerald-900 underline inline-flex items-center gap-1"
+                >
+                  <Mail className="w-3.5 h-3.5" />
+                  <span>muniphawa@gmail.com</span>
+                </a>
+              </p>
+              <p>
+                <span>App Name: </span>
+                <strong className="text-slate-900">Khasi Jaintia Calendar</strong>
+              </p>
+              <p>
+                <span>Developer: </span>
+                <strong className="text-slate-900">Ieij Iala Ka Jong</strong>
+              </p>
+            </div>
           </div>
 
           {/* Agreement Notice */}

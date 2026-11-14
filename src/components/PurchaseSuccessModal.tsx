@@ -27,7 +27,7 @@ export const PurchaseSuccessModal: React.FC<PurchaseSuccessModalProps> = ({
     setTimeout(() => setCopied(false), 2500);
   };
 
-  const isTemp = purchase.productId === 'temp_holiday_1year';
+  const isTemp = purchase.productId === 'temporary_holiday' || purchase.productId === 'temp_holiday_1year';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4">

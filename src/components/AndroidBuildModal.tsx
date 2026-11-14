@@ -192,7 +192,7 @@ bubblewrap build`;
             <div className="space-y-2">
               <div className="p-2.5 rounded-xl bg-white border border-blue-200 flex flex-wrap items-center justify-between gap-2 text-[11px]">
                 <div>
-                  <div className="font-mono font-bold text-slate-900">temp_holiday_1year</div>
+                  <div className="font-mono font-bold text-slate-900">temporary_holiday</div>
                   <div className="text-slate-500">Temporary (1 Year) Holiday • Consumable</div>
                 </div>
                 <div className="font-black text-slate-900 bg-amber-100 px-2.5 py-1 rounded-lg">
@@ -202,7 +202,7 @@ bubblewrap build`;
 
               <div className="p-2.5 rounded-xl bg-white border border-blue-200 flex flex-wrap items-center justify-between gap-2 text-[11px]">
                 <div>
-                  <div className="font-mono font-bold text-slate-900">permanent_holiday_forever</div>
+                  <div className="font-mono font-bold text-slate-900">permanent_holiday</div>
                   <div className="text-slate-500">Permanent (Every Year) Holiday • Consumable</div>
                 </div>
                 <div className="font-black text-slate-900 bg-emerald-100 px-2.5 py-1 rounded-lg">

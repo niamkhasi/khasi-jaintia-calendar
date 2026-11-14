@@ -59,7 +59,7 @@ export interface HolidayReport {
 }
 
 export interface BillingProduct {
-  productId: 'temp_holiday_1year' | 'permanent_holiday_forever';
+  productId: 'temporary_holiday' | 'permanent_holiday' | 'temp_holiday_1year' | 'permanent_holiday_forever';
   title: string;
   price: string;
   currency: string;

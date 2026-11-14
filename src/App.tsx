@@ -227,6 +227,17 @@ export default function App() {
       navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {});
     }
 
+    // Google Play Billing v6: On app start, call service.listPurchases() and if purchase exists, unlock that feature
+    billingClient.checkAndRestorePurchases().then((restoreResult) => {
+      if (restoreResult.restored) {
+        setSlots(billingClient.getSlots());
+        setReviewNoticeToast(`Google Play: Restored ${restoreResult.count} purchased holiday slot(s)!`);
+        setTimeout(() => setReviewNoticeToast(null), 6000);
+      }
+    }).catch((err) => {
+      console.warn('App start purchase restore check:', err);
+    });
+
     // Automatic greeting if today is a holiday!
     if (holidayToday) {
       const wishKey = `kj_holiday_greeted_${y}_${m}_${today.getDate()}`;

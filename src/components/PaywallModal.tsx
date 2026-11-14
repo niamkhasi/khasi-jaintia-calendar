@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Sparkles, Check, HelpCircle, ShieldCheck, Zap, Lock, ArrowRight, Loader2 } from 'lucide-react';
+import { X, Sparkles, HelpCircle, ShieldCheck, ArrowRight, Loader2, AlertCircle, ShoppingBag } from 'lucide-react';
 import { BILLING_PRODUCTS, billingClient, PurchaseResult } from '../services/billingClient';
 
 interface PaywallModalProps {
@@ -19,27 +19,66 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
   tempSlotsCount,
   permSlotsCount
 }) => {
-  const [selectedProduct, setSelectedProduct] = useState<'temp_holiday_1year' | 'permanent_holiday_forever'>('temp_holiday_1year');
+  const [selectedProduct, setSelectedProduct] = useState<'temporary_holiday' | 'permanent_holiday'>('temporary_holiday');
   const [purchasing, setPurchasing] = useState(false);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
 
+  const isDigitalGoods = billingClient.isDigitalGoodsAvailable();
+
+  /**
+   * Buy Button Logic:
+   * Calls Digital Goods API:
+   * - service.purchase('temporary_holiday') for ₹499
+   * - service.purchase('permanent_holiday') for ₹999
+   *
+   * UNLOCK RULE:
+   * Never unlocks on button click alone.
+   * Only unlocks if payment status is verified purchased / successful.
+   * If payment fails, cancelled, or pending -> keeps LOCKED and shows "Payment Failed, Try Again".
+   * If Digital Goods API is not available (normal browser) -> shows "Please buy from Play Store App".
+   */
   const handleBuy = async () => {
     setPurchasing(true);
     setPurchaseError(null);
     try {
       const result = await billingClient.launchBillingFlow(selectedProduct, userEmail);
-      if (result.success) {
+      if (result && result.success) {
         onPurchaseSuccess(result);
+      } else {
+        setPurchaseError('Payment Failed, Try Again');
       }
     } catch (err: unknown) {
-      setPurchaseError(err instanceof Error ? err.message : 'Google Play Billing flow was interrupted.');
+      const errorMsg = err instanceof Error ? err.message : 'Payment Failed, Try Again';
+      setPurchaseError(errorMsg);
     } finally {
       setPurchasing(false);
     }
   };
 
-  const tempProd = BILLING_PRODUCTS.temp_holiday_1year;
-  const permProd = BILLING_PRODUCTS.permanent_holiday_forever;
+  /**
+   * Razorpay Fallback (for normal browser testing if requested)
+   * Only unlocks if Razorpay payment ID is verified!
+   */
+  const handleRazorpayFallback = async () => {
+    setPurchasing(true);
+    setPurchaseError(null);
+    try {
+      const result = await billingClient.launchRazorpayFlow(selectedProduct, userEmail);
+      if (result && result.success) {
+        onPurchaseSuccess(result);
+      } else {
+        setPurchaseError('Payment Failed, Try Again');
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Payment Failed, Try Again';
+      setPurchaseError(msg);
+    } finally {
+      setPurchasing(false);
+    }
+  };
+
+  const tempProd = BILLING_PRODUCTS.temporary_holiday;
+  const permProd = BILLING_PRODUCTS.permanent_holiday;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-0 sm:p-4 overflow-hidden">
@@ -104,17 +143,48 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
         {/* Options Body */}
         <div className="p-4 sm:p-6 overflow-y-auto space-y-4">
           
+          {/* Error / Digital Goods Info Banner */}
           {purchaseError && (
-            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium">
-              {purchaseError}
+            <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-300 text-rose-900 text-xs font-semibold space-y-2.5 animate-in fade-in duration-200">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                <span className="font-bold">{purchaseError}</span>
+              </div>
+              
+              {purchaseError.includes('Play Store') && (
+                <div className="p-2.5 rounded-xl bg-white/80 border border-rose-200 text-slate-700 text-[11px] space-y-2">
+                  <p>
+                    Google Play Billing v6 is active via PWABuilder TWA inside the installed Play Store App.
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                    <a
+                      href="https://play.google.com/store/apps/details?id=com.khasi.jaintia.calendar"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 rounded-xl bg-[#0e2a3a] text-[#f1c40f] font-bold text-[11px] inline-flex items-center gap-1.5 hover:bg-slate-800 transition shadow-xs"
+                    >
+                      <ShoppingBag className="w-3.5 h-3.5" />
+                      <span>Open in Play Store App</span>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={handleRazorpayFallback}
+                      disabled={purchasing}
+                      className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] inline-flex items-center gap-1.5 transition shadow-xs cursor-pointer disabled:opacity-50"
+                    >
+                      <span>Pay with Razorpay / UPI</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
           {/* Product 1: Temporary (1 Year) */}
           <div
-            onClick={() => setSelectedProduct('temp_holiday_1year')}
+            onClick={() => setSelectedProduct('temporary_holiday')}
             className={`p-4 rounded-2xl border-2 transition cursor-pointer relative ${
-              selectedProduct === 'temp_holiday_1year'
+              selectedProduct === 'temporary_holiday'
                 ? 'border-[#0e2a3a] bg-amber-50/70 shadow-md ring-2 ring-[#0e2a3a]'
                 : 'border-slate-200 bg-white hover:border-slate-300'
             }`}
@@ -124,9 +194,9 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
                 <input
                   type="radio"
                   name="productSelection"
-                  checked={selectedProduct === 'temp_holiday_1year'}
-                  onChange={() => setSelectedProduct('temp_holiday_1year')}
-                  className="mt-1 text-[#0e2a3a] focus:ring-[#0e2a3a] w-4 h-4"
+                  checked={selectedProduct === 'temporary_holiday'}
+                  onChange={() => setSelectedProduct('temporary_holiday')}
+                  className="mt-1 text-[#0e2a3a] focus:ring-[#0e2a3a] w-4 h-4 cursor-pointer"
                 />
                 <div>
                   <div className="flex items-center gap-2">
@@ -155,9 +225,9 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
 
           {/* Product 2: Permanent (Every Year) */}
           <div
-            onClick={() => setSelectedProduct('permanent_holiday_forever')}
+            onClick={() => setSelectedProduct('permanent_holiday')}
             className={`p-4 rounded-2xl border-2 transition cursor-pointer relative ${
-              selectedProduct === 'permanent_holiday_forever'
+              selectedProduct === 'permanent_holiday'
                 ? 'border-emerald-700 bg-emerald-50/70 shadow-md ring-2 ring-emerald-700'
                 : 'border-slate-200 bg-white hover:border-slate-300'
             }`}
@@ -167,9 +237,9 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
                 <input
                   type="radio"
                   name="productSelection"
-                  checked={selectedProduct === 'permanent_holiday_forever'}
-                  onChange={() => setSelectedProduct('permanent_holiday_forever')}
-                  className="mt-1 text-emerald-700 focus:ring-emerald-700 w-4 h-4"
+                  checked={selectedProduct === 'permanent_holiday'}
+                  onChange={() => setSelectedProduct('permanent_holiday')}
+                  className="mt-1 text-emerald-700 focus:ring-emerald-700 w-4 h-4 cursor-pointer"
                 />
                 <div>
                   <div className="flex items-center gap-2">
@@ -228,7 +298,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
               <>
                 <Sparkles className="w-4 h-4 text-[#f1c40f]" />
                 <span>
-                  Buy {selectedProduct === 'temp_holiday_1year' ? 'Temporary (₹499)' : 'Permanent (₹999)'}
+                  Buy {selectedProduct === 'temporary_holiday' ? 'Temporary (₹499)' : 'Permanent (₹999)'}
                 </span>
                 <ArrowRight className="w-4 h-4 text-slate-300" />
               </>
@@ -249,7 +319,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="text-slate-500 hover:text-slate-800 font-semibold text-xs"
+              className="text-slate-500 hover:text-slate-800 font-semibold text-xs cursor-pointer"
             >
               Cancel
             </button>

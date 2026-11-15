@@ -46,7 +46,7 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // Bypass Firebase Firestore, Auth, AdSense and Monetag live endpoints so SDK manages its own state
+  // Bypass Firebase Firestore, Auth, and Google AdSense live endpoints so SDK manages its own state
   if (
     url.hostname.includes("firestore.googleapis.com") ||
     url.hostname.includes("identitytoolkit.googleapis.com") ||
@@ -55,9 +55,7 @@ self.addEventListener("fetch", (e) => {
     url.hostname.includes("pagead2.googlesyndication.com") ||
     url.hostname.includes("googleads.g.doubleclick.net") ||
     url.hostname.includes("adservice.google.com") ||
-    url.hostname.includes("googlesyndication.com") ||
-    url.hostname.includes("nap5k.com") ||
-    url.hostname.includes("monetag.com")
+    url.hostname.includes("googlesyndication.com")
   ) {
     return;
   }

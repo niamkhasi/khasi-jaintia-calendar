@@ -108,7 +108,7 @@ export const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({ onClose 
               4. Advertising - Generic For Lifetime
             </h3>
             <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
-              Our app may show ads. We currently use Monetag to show ads. We may change, add, or remove any advertising partner at any time in the future without changing this policy.
+              Our app may show ads. We currently use Google AdSense / AdMob to show ads. We may change, add, or remove any advertising partner at any time in the future without changing this policy.
             </p>
             <p className="text-slate-700 text-xs sm:text-sm leading-relaxed font-semibold text-slate-900">
               Our current and any future advertising partners may collect and use:
@@ -151,7 +151,7 @@ export const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({ onClose 
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-slate-500 shrink-0" />
-                <span><strong>Monetag and/or any other Advertising Partner</strong> - For showing ads (current or future)</span>
+                <span><strong>Google and/or any other Advertising Partner</strong> - For showing ads (current or future)</span>
               </li>
             </ul>
           </div>

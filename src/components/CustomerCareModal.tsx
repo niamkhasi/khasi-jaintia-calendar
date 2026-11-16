@@ -33,7 +33,6 @@ interface CustomerCareModalProps {
   allHolidays: AllHolidayItem[];
   onSubmitReport: (data: { holidayId: string; holidayTitle: string; reason: string }) => Promise<void>;
   onOpenBannerSettings?: () => void;
-  onOpenPrivacyPolicy?: () => void;
   onApproveHoliday?: (holidayId: string) => Promise<void>;
   onDenyHoliday?: (holidayId: string, reason?: string) => Promise<void>;
 }
@@ -46,7 +45,6 @@ export const CustomerCareModal: React.FC<CustomerCareModalProps> = ({
   allHolidays,
   onSubmitReport,
   onOpenBannerSettings,
-  onOpenPrivacyPolicy,
   onApproveHoliday,
   onDenyHoliday
 }) => {
@@ -628,33 +626,6 @@ export const CustomerCareModal: React.FC<CustomerCareModalProps> = ({
             </button>
           )}
 
-          {/* Privacy Policy Button - Below Banner Settings */}
-          {onOpenPrivacyPolicy && (
-            <button
-              onClick={() => {
-                onClose();
-                onOpenPrivacyPolicy();
-              }}
-              className="w-full group flex items-start gap-3.5 p-4 rounded-2xl bg-emerald-50/80 hover:bg-emerald-100/90 border border-emerald-200 transition shadow-xs text-slate-900 text-left cursor-pointer"
-            >
-              <div className="w-11 h-11 rounded-xl bg-[#0e2a3a] text-[#f1c40f] flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition font-black">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-extrabold text-slate-900 flex items-center gap-1.5">
-                    <span>Privacy Policy</span>
-                  </h4>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-950 font-semibold">
-                    Effective Nov 13, 2026
-                  </span>
-                </div>
-                <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                  Review our privacy commitments, in-app purchases, and advertising policy.
-                </p>
-              </div>
-            </button>
-          )}
 
           {/* Option 3: Report Bad Holiday */}
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-xs space-y-3">

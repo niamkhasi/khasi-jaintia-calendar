@@ -34,7 +34,26 @@ export const BannerSettingsModal: React.FC<BannerSettingsModalProps> = ({
   onClose,
   onSaved,
 }) => {
-  const [config, setConfig] = useState<BannerConfig>(() => getBannerConfig());
+  const [config, setConfig] = useState<BannerConfig>(() => {
+    const base = getBannerConfig();
+    const fixedSlots: BannerItem[] = [0, 1, 2].map(slotIdx => {
+      const existing = base.banners && base.banners[slotIdx];
+      return existing
+        ? { ...existing, id: `banner_${slotIdx + 1}` }
+        : {
+            id: `banner_${slotIdx + 1}`,
+            imageUrl: '',
+            title: '',
+            link: '',
+            enabled: true,
+            durationSeconds: base.customBannerDurationSeconds || 10
+          };
+    });
+    return {
+      ...base,
+      banners: fixedSlots
+    };
+  });
   const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [processingSlot, setProcessingSlot] = useState<number | null>(null);
@@ -73,6 +92,7 @@ export const BannerSettingsModal: React.FC<BannerSettingsModalProps> = ({
     }
     updated[slotIdx] = {
       ...updated[slotIdx],
+      id: `banner_${slotIdx + 1}`,
       ...updates
     };
     setConfig(prev => ({
@@ -82,7 +102,25 @@ export const BannerSettingsModal: React.FC<BannerSettingsModalProps> = ({
   };
 
   const handleDeleteSlot = (slotIdx: number) => {
-    const updated = config.banners.filter((_, idx) => idx !== slotIdx);
+    const updated = [...config.banners];
+    while (updated.length <= slotIdx) {
+      updated.push({
+        id: `banner_${updated.length + 1}`,
+        imageUrl: '',
+        title: '',
+        link: '',
+        enabled: true,
+        durationSeconds: config.customBannerDurationSeconds || 10
+      });
+    }
+    updated[slotIdx] = {
+      id: `banner_${slotIdx + 1}`,
+      imageUrl: '',
+      title: '',
+      link: '',
+      enabled: false,
+      durationSeconds: config.customBannerDurationSeconds || 10
+    };
     setConfig(prev => ({
       ...prev,
       banners: updated
@@ -111,15 +149,25 @@ export const BannerSettingsModal: React.FC<BannerSettingsModalProps> = ({
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Preserve custom banners with their individual enabled flag and duration (5s - 60s)
-      const validBanners = config.banners.map((b, idx) => ({
-        ...b,
-        id: b.id || `banner_${idx + 1}`,
-        enabled: typeof b.enabled === 'boolean' ? b.enabled : true,
-        durationSeconds: (b.durationSeconds && b.durationSeconds >= 5 && b.durationSeconds <= 60)
-          ? b.durationSeconds
-          : (config.customBannerDurationSeconds || 10)
-      }));
+      // Guarantee exactly unique slot IDs banner_1, banner_2, banner_3
+      const validBanners = [0, 1, 2].map(slotIdx => {
+        const b = config.banners[slotIdx] || {
+          id: `banner_${slotIdx + 1}`,
+          imageUrl: '',
+          title: '',
+          link: '',
+          enabled: false,
+          durationSeconds: config.customBannerDurationSeconds || 10
+        };
+        return {
+          ...b,
+          id: `banner_${slotIdx + 1}`,
+          enabled: typeof b.enabled === 'boolean' ? b.enabled : true,
+          durationSeconds: (b.durationSeconds && b.durationSeconds >= 5 && b.durationSeconds <= 60)
+            ? b.durationSeconds
+            : (config.customBannerDurationSeconds || 10)
+        };
+      });
 
       const finalConfig: BannerConfig = {
         ...config,

@@ -90,13 +90,24 @@ export function sanitizeBannerConfig(raw: any): BannerConfig {
     return DEFAULT_BANNER_CONFIG;
   }
 
-  // Parse banners array and ensure each has valid properties and duration (5s - 60s)
+  // Parse banners array and ensure each has valid properties, unique IDs, and duration (5s - 60s)
   const hasRawBanners = Array.isArray(raw.banners) && raw.banners.some((b: any) => Boolean(b && b.imageUrl && b.imageUrl.trim()));
+  const seenIds = new Set<string>();
   const parsedBanners: BannerItem[] = hasRawBanners
     ? raw.banners.map((b: any, idx: number) => {
         const itemDuration = Number(b.durationSeconds);
+        const fallbackId = `banner_${idx + 1}`;
+        let bannerId = typeof b.id === 'string' && b.id.trim() ? b.id.trim() : fallbackId;
+        if (seenIds.has(bannerId)) {
+          bannerId = fallbackId;
+          if (seenIds.has(bannerId)) {
+            bannerId = `${bannerId}_${idx + 1}`;
+          }
+        }
+        seenIds.add(bannerId);
+
         return {
-          id: b.id || `banner_${idx + 1}`,
+          id: bannerId,
           imageUrl: typeof b.imageUrl === 'string' ? b.imageUrl : '',
           title: typeof b.title === 'string' ? b.title : '',
           link: typeof b.link === 'string' ? b.link : '',

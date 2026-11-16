@@ -60,6 +60,9 @@ import { BannerCarousel } from './components/BannerCarousel';
 import { BannerSettingsModal } from './components/BannerSettingsModal';
 import { PrivacyPolicyModal } from './components/PrivacyPolicyModal';
 import { BannerConfig, getBannerConfig, isBannerActiveToday, subscribeToBannerConfig } from './services/bannerService';
+import { AboutUsModal } from './components/AboutUsModal';
+import { TermsConditionsModal } from './components/TermsConditionsModal';
+import { ContactUsModal } from './components/ContactUsModal';
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -95,6 +98,9 @@ export default function App() {
   const [showBanner, setShowBanner] = useState<boolean>(() => isBannerActiveToday(getBannerConfig()));
   const [showBannerSettings, setShowBannerSettings] = useState<boolean>(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState<boolean>(false);
+  const [showAboutUs, setShowAboutUs] = useState<boolean>(false);
+  const [showTerms, setShowTerms] = useState<boolean>(false);
+  const [showContactUs, setShowContactUs] = useState<boolean>(false);
   const [showSyncedToast, setShowSyncedToast] = useState<boolean>(false);
   const [reviewNoticeToast, setReviewNoticeToast] = useState<string | null>(null);
 
@@ -1261,28 +1267,59 @@ export default function App() {
           </div>
         </div>
 
-        {/* Footer */}
-        <footer className="text-center p-6 bg-[#0e2a3a] text-white">
-          <div className="text-xs text-slate-300">
+        {/* Footer with new order */}
+        <footer className="text-center p-6 md:p-8 bg-[#0e2a3a] text-white space-y-3 sm:space-y-4">
+          
+          {/* 1. First line on top: BIG, WHITE, BOLD, easy to tap on mobile */}
+          <div className="flex flex-wrap items-center justify-center gap-x-2 sm:gap-x-3 gap-y-2">
+            <button
+              type="button"
+              onClick={() => setShowAboutUs(true)}
+              className="text-white hover:text-[#f1c40f] font-bold text-sm sm:text-base px-2.5 py-1.5 rounded-lg hover:bg-white/10 active:scale-95 transition cursor-pointer"
+            >
+              About Us
+            </button>
+            <span className="text-white/40 font-normal select-none" aria-hidden="true">|</span>
+            <button
+              type="button"
+              onClick={() => setShowPrivacyPolicy(true)}
+              className="text-white hover:text-[#f1c40f] font-bold text-sm sm:text-base px-2.5 py-1.5 rounded-lg hover:bg-white/10 active:scale-95 transition cursor-pointer"
+            >
+              Privacy Policy
+            </button>
+            <span className="text-white/40 font-normal select-none" aria-hidden="true">|</span>
+            <button
+              type="button"
+              onClick={() => setShowTerms(true)}
+              className="text-white hover:text-[#f1c40f] font-bold text-sm sm:text-base px-2.5 py-1.5 rounded-lg hover:bg-white/10 active:scale-95 transition cursor-pointer"
+            >
+              Terms &amp; Conditions
+            </button>
+            <span className="text-white/40 font-normal select-none" aria-hidden="true">|</span>
+            <button
+              type="button"
+              onClick={() => setShowContactUs(true)}
+              className="text-white hover:text-[#f1c40f] font-bold text-sm sm:text-base px-2.5 py-1.5 rounded-lg hover:bg-white/10 active:scale-95 transition cursor-pointer"
+            >
+              Contact Us
+            </button>
+          </div>
+
+          {/* 2. Second line: Crafted with pride for our people */}
+          <div className="text-xs sm:text-sm text-slate-300 font-medium tracking-wide">
             Crafted with pride for our people
           </div>
-          <div className="text-base font-extrabold tracking-tight mt-1 font-display">
-            KHASI JAINTIA CALENDAR
+
+          {/* 3. Third line: KHASI JAINTIA CALENDAR \n By Ieij Iala Ka Jong */}
+          <div className="pt-0.5">
+            <div className="text-base sm:text-lg font-black tracking-tight font-display text-white">
+              KHASI JAINTIA CALENDAR
+            </div>
+            <div className="text-xs sm:text-sm font-bold text-[#f1c40f] mt-0.5">
+              By Ieij Iala Ka Jong
+            </div>
           </div>
-          <div className="text-sm font-bold text-[#f1c40f] mt-0.5">
-            By Ieij Iala Ka Jong
-          </div>
-          <div className="text-[11px] text-slate-400 mt-2 flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
-            <span>2025–2100</span>
-            <span>•</span>
-            <span>Offline Ready</span>
-            <span>•</span>
-            <span>No Ads</span>
-            <span>•</span>
-            <span>8 Sngi Iew</span>
-            <span>•</span>
-            <span>Khasi & Jaiñtia</span>
-          </div>
+
         </footer>
 
       </div>
@@ -1457,7 +1494,6 @@ export default function App() {
           allHolidays={allPaidHolidays}
           onSubmitReport={submitHolidayReport}
           onOpenBannerSettings={() => setShowBannerSettings(true)}
-          onOpenPrivacyPolicy={() => setShowPrivacyPolicy(true)}
           onApproveHoliday={approveHoliday}
           onDenyHoliday={denyHoliday}
         />
@@ -1467,6 +1503,37 @@ export default function App() {
       {showPrivacyPolicy && (
         <PrivacyPolicyModal
           onClose={() => setShowPrivacyPolicy(false)}
+        />
+      )}
+
+      {/* About Us Modal */}
+      {showAboutUs && (
+        <AboutUsModal
+          onClose={() => setShowAboutUs(false)}
+          onOpenContactUs={() => {
+            setShowAboutUs(false);
+            setShowContactUs(true);
+          }}
+        />
+      )}
+
+      {/* Terms and Conditions Modal */}
+      {showTerms && (
+        <TermsConditionsModal
+          onClose={() => setShowTerms(false)}
+          onOpenContactUs={() => {
+            setShowTerms(false);
+            setShowContactUs(true);
+          }}
+        />
+      )}
+
+      {/* Contact Us Modal */}
+      {showContactUs && (
+        <ContactUsModal
+          onClose={() => setShowContactUs(false)}
+          defaultEmail={currentUser?.email || ''}
+          defaultName={currentUser?.displayName || ''}
         />
       )}
 

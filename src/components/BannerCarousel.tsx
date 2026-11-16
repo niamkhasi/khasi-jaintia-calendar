@@ -82,6 +82,7 @@ export const BannerCarousel: React.FC<BannerCarouselProps> = ({
   onAutoDisappear,
 }) => {
   // 1. Gather all active custom banners (Banner 1, Banner 2, Banner 3)
+  const seenSlideIds = new Set<string>();
   const customSlides: CarouselSlide[] = (config.banners || [])
     .filter(b => b.enabled !== false && Boolean(b.imageUrl && b.imageUrl.trim()))
     .map((b, idx) => {
@@ -90,9 +91,14 @@ export const BannerCarousel: React.FC<BannerCarouselProps> = ({
         : (config.customBannerDurationSeconds >= 5 && config.customBannerDurationSeconds <= 60
             ? config.customBannerDurationSeconds
             : 10);
+      let slideId = b.id || `custom_${idx + 1}`;
+      if (seenSlideIds.has(slideId)) {
+        slideId = `${slideId}_${idx + 1}`;
+      }
+      seenSlideIds.add(slideId);
       return {
         type: 'custom',
-        id: b.id || `custom_${idx + 1}`,
+        id: slideId,
         banner: b,
         durationMs: bannerSec * 1000
       };
@@ -194,7 +200,7 @@ export const BannerCarousel: React.FC<BannerCarouselProps> = ({
           if (slide.type === 'ad') {
             return (
               <div
-                key={slide.id}
+                key={`slide-${slide.id}-${idx}`}
                 className={`w-full h-full absolute inset-0 transition-opacity duration-500 ${
                   isActive ? 'opacity-100 pointer-events-auto z-10' : 'opacity-0 pointer-events-none z-0'
                 }`}
@@ -206,7 +212,7 @@ export const BannerCarousel: React.FC<BannerCarouselProps> = ({
 
           return (
             <div
-              key={slide.id}
+              key={`slide-${slide.id}-${idx}`}
               onClick={() => handleCustomBannerClick(slide.banner)}
               className={`w-full h-full absolute inset-0 transition-opacity duration-500 bg-slate-900 ${
                 slide.banner.link ? 'cursor-pointer' : ''
@@ -239,7 +245,7 @@ export const BannerCarousel: React.FC<BannerCarouselProps> = ({
             const isActive = idx === activeIndex;
             return (
               <span
-                key={s.id || idx}
+                key={`dot-${s.id}-${idx}`}
                 className={`transition-all duration-300 rounded-full flex items-center justify-center ${
                   isActive
                     ? isAd

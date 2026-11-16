@@ -23,7 +23,8 @@ import {
   LogOut,
   Scale,
   X,
-  Clock
+  Clock,
+  FileText
 } from 'lucide-react';
 import { 
   KHASI_MONTHS, 
@@ -63,6 +64,7 @@ import { BannerConfig, getBannerConfig, isBannerActiveToday, subscribeToBannerCo
 import { AboutUsModal } from './components/AboutUsModal';
 import { TermsConditionsModal } from './components/TermsConditionsModal';
 import { ContactUsModal } from './components/ContactUsModal';
+import { ArticlesModal } from './components/ArticlesModal';
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -101,6 +103,7 @@ export default function App() {
   const [showAboutUs, setShowAboutUs] = useState<boolean>(false);
   const [showTerms, setShowTerms] = useState<boolean>(false);
   const [showContactUs, setShowContactUs] = useState<boolean>(false);
+  const [showArticles, setShowArticles] = useState<boolean>(false);
   const [showSyncedToast, setShowSyncedToast] = useState<boolean>(false);
   const [reviewNoticeToast, setReviewNoticeToast] = useState<string | null>(null);
 
@@ -719,12 +722,22 @@ export default function App() {
 
               <button
                 onClick={() => setShowHolidays(true)}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition cursor-pointer"
                 title="View Meghalaya state holidays and festivals"
               >
                 <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                 <span className="hidden sm:inline">Holidays</span>
                 <span className="sm:hidden">Holidays</span>
+              </button>
+
+              <button
+                onClick={() => setShowArticles(true)}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition cursor-pointer"
+                title="Read 13 cultural articles of Khasi & Jaintia"
+              >
+                <FileText className="w-3.5 h-3.5 text-[#f1c40f]" />
+                <span className="hidden sm:inline">Articles</span>
+                <span className="sm:hidden">Articles</span>
               </button>
 
               {/* User Account / Profile inside Gold Circle */}
@@ -1369,6 +1382,7 @@ export default function App() {
       {showFinder && (
         <MarketFinderModal
           currentYear={currentYear}
+          currentMonth={currentMonth}
           onClose={() => setShowFinder(false)}
           onSelectDate={(y, m, d) => {
             setCurrentYear(y);
@@ -1534,6 +1548,17 @@ export default function App() {
           onClose={() => setShowContactUs(false)}
           defaultEmail={currentUser?.email || ''}
           defaultName={currentUser?.displayName || ''}
+        />
+      )}
+
+      {/* Articles Modal (13 Cultural Articles) */}
+      {showArticles && (
+        <ArticlesModal
+          onClose={() => setShowArticles(false)}
+          onOpenContactUs={() => {
+            setShowArticles(false);
+            setShowContactUs(true);
+          }}
         />
       )}
 

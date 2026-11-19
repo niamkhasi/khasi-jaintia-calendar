@@ -6,128 +6,136 @@ import {
   ChevronRight, 
   ArrowLeft, 
   HeartHandshake, 
-  Sparkles, 
   MessageSquare, 
   Clock, 
-  BookOpen,
-  Calendar,
-  Landmark,
-  Shield,
-  Mountain,
-  Users
+  Share2,
+  Check,
+  BookOpen
 } from 'lucide-react';
-
-export interface ArticleItem {
-  id: number;
-  title: string;
-  category: string;
-  subtitle: string;
-  summary: string;
-  iconName?: string;
-}
-
-export const ARTICLES_DATA: ArticleItem[] = [
-  {
-    id: 1,
-    title: 'Our Khasi Calender',
-    category: 'Calendar & Tradition',
-    subtitle: 'Ka Kot Khubor & Ka Rukom Khein Tarikh Ka Ri',
-    summary: 'The unique structure of the Khasi calendar based on lunar cycles, seasonal changes, and traditional market intervals.',
-  },
-  {
-    id: 2,
-    title: 'Eight Sngi Iew (8 Market Days)',
-    category: 'Markets & Trade',
-    subtitle: 'Ka Rukom Khein Sngi Iew ha Khasi & Jaiñtia',
-    summary: 'The sacred 8-day weekly cycle: Lawbah, Pnar, Umni, Iewduh, Lyngka, Nongkrem, Ryei, and Hat.',
-  },
-  {
-    id: 3,
-    title: 'Hynniew Trep',
-    category: 'Ancestry & Heritage',
-    subtitle: 'Ki Hynniew Trep Hynniew Skum',
-    summary: 'The sacred origin and belief of the Seven Huts placed on earth to care for nature, culture, and kinship.',
-  },
-  {
-    id: 4,
-    title: 'Behdeiñkhlam',
-    category: 'Festivals & Faith',
-    subtitle: 'Ka Niam Ka Rukom ha Jaiñtia Hills',
-    summary: 'The grand ritual festival of the Pnar people to drive away evil plagues and invoke bumper harvest and well-being.',
-  },
-  {
-    id: 5,
-    title: '12 Daloi 30 Syiem',
-    category: 'Traditional Governance',
-    subtitle: 'Ki Hima, Ki Elaka & Ka Synshar Khadar Tynrai',
-    summary: 'The indigenous democratic chieftainships, traditional Dorbars, and elders governing the Khasi and Jaintia kingdoms.',
-  },
-  {
-    id: 6,
-    title: 'Our Khasi Merriage And Our Child',
-    category: 'Society & Kinship',
-    subtitle: 'Ka Kur Ka Jait & Ka Poikha Poiman',
-    summary: 'Matrilineal lineage, sacred marriage rites, clan respect (Ka Akor), and naming traditions passed from mother to children.',
-  },
-  {
-    id: 7,
-    title: 'Ka Khun Khadduh (Youngest Daughter)',
-    category: 'Family & Custodianship',
-    subtitle: 'Ka Nongri Nongda & Ka Kmie ha Iing',
-    summary: 'The sacred role of the youngest daughter as the custodian of ancestral property and caretaker of aging parents.',
-  },
-  {
-    id: 8,
-    title: 'U Lum Shillong',
-    category: 'Sacred Mountains',
-    subtitle: "Ka Shnong Ki Blei & U 'Lei Shillong",
-    summary: "The highest peak and legendary home of the presiding deity U 'Lei Shillong guarding over the hills.",
-  },
-  {
-    id: 9,
-    title: 'U Lum Sohpet Bneng',
-    category: 'Sacred Mountains',
-    subtitle: 'Ka Jingkieng Ksiar & The Navel of Heaven',
-    summary: 'The sacred hill of the golden ladder connecting heaven and earth, venerated by our indigenous faith.',
-  },
-  {
-    id: 10,
-    title: 'Shad Suk Mynsiem',
-    category: 'Festivals & Dance',
-    subtitle: 'Ka Shad Kmen & Dance of Peaceful Hearts',
-    summary: 'The spring thanksgiving dance of maidens and men celebrating life, peace, and offering thanks to God (U Blei).',
-  },
-  {
-    id: 11,
-    title: 'Shad Sukra',
-    category: 'Festivals & Dance',
-    subtitle: 'Ka Shad Pyllun ha Pnar / Jaintia',
-    summary: 'The joyful sowing festival dance of the Pnar people praying for peace, rain, and fertile earth before planting.',
-  },
-  {
-    id: 12,
-    title: 'U Tirot Sing Syiem',
-    category: 'Freedom Fighters & Heroes',
-    subtitle: 'U Khla Wait Ka Ri Khasi (Hero of Nongkhlaw)',
-    summary: 'The fearless Syiem of Nongkhlaw who led the Anglo-Khasi war of 1829–1833 resisting colonial British subjugation.',
-  },
-  {
-    id: 13,
-    title: 'U Kiang Nangbah',
-    category: 'Freedom Fighters & Heroes',
-    subtitle: 'U Shlur Ka Ri Jaiñtia',
-    summary: 'The legendary martyr of Jaintia Hills who fought against unjust British taxes and gave his life for the motherland.',
-  },
-];
+import { ARTICLES_DATA, ArticleItem } from '../data/articlesData';
 
 interface ArticlesModalProps {
   onClose: () => void;
   onOpenContactUs?: () => void;
 }
 
+function parseInlineFormatting(text: string): React.ReactNode {
+  if (!text.includes('**')) return text;
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, idx) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return (
+        <strong key={idx} className="font-bold text-slate-950">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return part;
+  });
+}
+
+const ArticleContentRenderer: React.FC<{ content: string }> = ({ content }) => {
+  const paragraphs = content.split('\n\n');
+
+  return (
+    <div className="space-y-4 text-slate-800 text-sm sm:text-[15px] leading-relaxed">
+      {paragraphs.map((para, pIdx) => {
+        const trimmed = para.trim();
+        if (!trimmed) return null;
+
+        // Subheadings starting with ###
+        if (trimmed.startsWith('### ')) {
+          return (
+            <h4
+              key={pIdx}
+              className="text-base sm:text-lg font-black text-[#0e2a3a] pt-3 pb-1 border-b border-amber-200/80 font-display flex items-center gap-2"
+            >
+              <span className="w-2.5 h-2.5 rounded-full bg-[#f1c40f] shrink-0" />
+              <span>{trimmed.replace(/^###\s+/, '')}</span>
+            </h4>
+          );
+        }
+
+        // Multi-line block handling (lists or paragraphs)
+        const lines = trimmed.split('\n');
+
+        // Check if all lines are bullet points
+        const isBulletList = lines.every(l => l.trim().startsWith('- ') || l.trim().startsWith('* '));
+        if (isBulletList) {
+          return (
+            <ul key={pIdx} className="space-y-1.5 pl-2 my-2">
+              {lines.map((l, lIdx) => (
+                <li key={lIdx} className="flex items-start gap-2 text-slate-800">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0 mt-2" />
+                  <span>{parseInlineFormatting(l.replace(/^[-*]\s+/, ''))}</span>
+                </li>
+              ))}
+            </ul>
+          );
+        }
+
+        // Check if all lines are numbered points
+        const isNumberedList = lines.every(l => /^\d+\.\s+/.test(l.trim()));
+        if (isNumberedList) {
+          return (
+            <ol key={pIdx} className="space-y-2 pl-1 my-2">
+              {lines.map((l, lIdx) => {
+                const numMatch = l.trim().match(/^(\d+)\.\s+(.*)$/);
+                if (!numMatch) return <li key={lIdx}>{parseInlineFormatting(l)}</li>;
+                return (
+                  <li key={lIdx} className="flex items-start gap-2.5 text-slate-800">
+                    <span className="w-5 h-5 rounded-full bg-[#0e2a3a] text-white text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
+                      {numMatch[1]}
+                    </span>
+                    <span className="font-medium pt-0.5">{parseInlineFormatting(numMatch[2])}</span>
+                  </li>
+                );
+              })}
+            </ol>
+          );
+        }
+
+        // Mixed or regular paragraph
+        return (
+          <div key={pIdx} className="space-y-1.5">
+            {lines.map((line, lIdx) => {
+              const lTrim = line.trim();
+              if (lTrim.startsWith('- ') || lTrim.startsWith('* ')) {
+                return (
+                  <div key={lIdx} className="flex items-start gap-2 pl-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0 mt-2" />
+                    <span>{parseInlineFormatting(lTrim.replace(/^[-*]\s+/, ''))}</span>
+                  </div>
+                );
+              }
+              if (/^\d+\.\s+/.test(lTrim)) {
+                const numMatch = lTrim.match(/^(\d+)\.\s+(.*)$/);
+                return (
+                  <div key={lIdx} className="flex items-start gap-2 pl-1">
+                    <span className="w-5 h-5 rounded-full bg-[#0e2a3a] text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                      {numMatch ? numMatch[1] : ''}
+                    </span>
+                    <span className="font-medium">{numMatch ? parseInlineFormatting(numMatch[2]) : lTrim}</span>
+                  </div>
+                );
+              }
+              return (
+                <p key={lIdx} className="leading-relaxed">
+                  {parseInlineFormatting(line)}
+                </p>
+              );
+            })}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 export const ArticlesModal: React.FC<ArticlesModalProps> = ({ onClose, onOpenContactUs }) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedArticle, setSelectedArticle] = useState<ArticleItem | null>(null);
+  const [copiedToast, setCopiedToast] = useState<boolean>(false);
 
   const filteredArticles = ARTICLES_DATA.filter((item) => {
     if (!searchQuery.trim()) return true;
@@ -139,6 +147,21 @@ export const ArticlesModal: React.FC<ArticlesModalProps> = ({ onClose, onOpenCon
       item.summary.toLowerCase().includes(q)
     );
   });
+
+  const handleShareArticle = (article: ArticleItem) => {
+    const textToShare = `${article.title}\n\n${article.content || article.summary}\n\n— Khasi Jaintia Calendar`;
+    if (navigator.share) {
+      navigator.share({
+        title: article.title,
+        text: textToShare,
+      }).catch(() => {});
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(textToShare).then(() => {
+        setCopiedToast(true);
+        setTimeout(() => setCopiedToast(false), 2500);
+      });
+    }
+  };
 
   return (
     <div
@@ -215,57 +238,90 @@ export const ArticlesModal: React.FC<ArticlesModalProps> = ({ onClose, onOpenCon
           {/* If an article is selected, show the article reading view */}
           {selectedArticle ? (
             <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4 animate-in fade-in duration-150">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              
+              {/* Navigation & Header */}
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 gap-2">
                 <button
                   type="button"
                   onClick={() => setSelectedArticle(null)}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-950 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 transition cursor-pointer"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-slate-950 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 transition cursor-pointer"
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  <span>Back to Articles List</span>
+                  <span>Back to Articles</span>
                 </button>
 
-                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300">
-                  Article #{selectedArticle.id}
-                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleShareArticle(selectedArticle)}
+                    className="inline-flex items-center gap-1 text-xs font-bold text-slate-700 hover:text-slate-950 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 transition cursor-pointer"
+                    title="Share this article"
+                  >
+                    {copiedToast ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        <span className="text-emerald-700">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Share2 className="w-3.5 h-3.5 text-slate-600" />
+                        <span>Share</span>
+                      </>
+                    )}
+                  </button>
+
+                  <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300">
+                    Article #{selectedArticle.id}
+                  </span>
+                </div>
               </div>
 
               {/* Title & Badge */}
               <div>
-                <span className="text-[10px] font-black uppercase tracking-wider text-teal-700 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200">
+                <span className="text-[10px] font-black uppercase tracking-wider text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-md border border-teal-200">
                   {selectedArticle.category}
                 </span>
-                <h3 className="text-lg sm:text-xl font-black text-slate-900 mt-2 font-display">
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 mt-2 font-display leading-tight">
                   {selectedArticle.id}. {selectedArticle.title}
                 </h3>
-                <p className="text-xs sm:text-sm font-semibold text-amber-700 mt-0.5">
-                  {selectedArticle.subtitle}
-                </p>
+                {selectedArticle.heading && (
+                  <p className="text-xs sm:text-sm font-bold text-amber-800 mt-1">
+                    {selectedArticle.heading}
+                  </p>
+                )}
               </div>
 
-              {/* Summary */}
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-700 leading-relaxed">
-                {selectedArticle.summary}
-              </div>
-
-              {/* Full Article Text Placeholder / Notice */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-[#0e2a3a] text-white space-y-2.5 shadow-md">
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-[#f1c40f]" />
-                  <h4 className="text-xs sm:text-sm font-bold text-[#f1c40f]">
-                    Article Content Coming Soon
-                  </h4>
+              {/* Article Content Display */}
+              {selectedArticle.content ? (
+                <div className="pt-2 border-t border-slate-100">
+                  <ArticleContentRenderer content={selectedArticle.content} />
                 </div>
-                <p className="text-xs text-slate-200 leading-relaxed">
-                  The complete in-depth article text for <strong>{selectedArticle.title}</strong> is currently being compiled and will be published here shortly.
-                </p>
-                <p className="text-[11px] text-slate-300 italic">
-                  Have facts, folk stories, or historical records to contribute? Feel free to contact our team.
-                </p>
-              </div>
+              ) : (
+                /* Placeholder for articles 7 to 13 */
+                <div className="space-y-4 pt-2">
+                  <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                    {selectedArticle.summary}
+                  </div>
+
+                  <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-[#0e2a3a] text-white space-y-2.5 shadow-md">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-[#f1c40f]" />
+                      <h4 className="text-xs sm:text-sm font-bold text-[#f1c40f]">
+                        Article Content Coming Soon
+                      </h4>
+                    </div>
+                    <p className="text-xs text-slate-200 leading-relaxed">
+                      The complete in-depth article text for <strong>{selectedArticle.title}</strong> will be published here as soon as our team finalizes the content.
+                    </p>
+                    <p className="text-[11px] text-slate-300 italic">
+                      Have facts, folk stories, or historical records to contribute? Feel free to contact our team.
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-4 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setSelectedArticle(null)}
@@ -284,7 +340,7 @@ export const ArticlesModal: React.FC<ArticlesModalProps> = ({ onClose, onOpenCon
                     className="px-4 py-2 rounded-xl bg-[#0e2a3a] hover:bg-slate-800 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm"
                   >
                     <MessageSquare className="w-3.5 h-3.5 text-[#f1c40f]" />
-                    <span>Send Information</span>
+                    <span>Send Correction / Feedback</span>
                   </button>
                 )}
               </div>
@@ -319,43 +375,55 @@ export const ArticlesModal: React.FC<ArticlesModalProps> = ({ onClose, onOpenCon
                     No articles found matching &ldquo;{searchQuery}&rdquo;.
                   </div>
                 ) : (
-                  filteredArticles.map((article) => (
-                    <div
-                      key={article.id}
-                      onClick={() => setSelectedArticle(article)}
-                      className="p-3.5 sm:p-4 rounded-2xl bg-white hover:bg-amber-50/50 border border-slate-200 hover:border-amber-400/80 transition-all shadow-2xs hover:shadow-xs cursor-pointer group flex items-center justify-between gap-3"
-                    >
-                      <div className="flex items-start gap-3 min-w-0 flex-1">
-                        {/* Number Badge */}
-                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#0e2a3a] text-white group-hover:bg-[#f1c40f] group-hover:text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center shrink-0 transition-colors shadow-xs">
-                          {article.id}
-                        </div>
-
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <h4 className="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-[#0e2a3a] transition-colors leading-tight">
-                              {article.title}
-                            </h4>
-                            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-md bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
-                              {article.category}
-                            </span>
+                  filteredArticles.map((article) => {
+                    const hasFullText = Boolean(article.content);
+                    return (
+                      <div
+                        key={article.id}
+                        onClick={() => setSelectedArticle(article)}
+                        className="p-3.5 sm:p-4 rounded-2xl bg-white hover:bg-amber-50/50 border border-slate-200 hover:border-amber-400/80 transition-all shadow-2xs hover:shadow-xs cursor-pointer group flex items-center justify-between gap-3"
+                      >
+                        <div className="flex items-start gap-3 min-w-0 flex-1">
+                          {/* Number Badge */}
+                          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#0e2a3a] text-white group-hover:bg-[#f1c40f] group-hover:text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center shrink-0 transition-colors shadow-xs">
+                            {article.id}
                           </div>
 
-                          <p className="text-[11px] text-amber-700 font-semibold truncate mt-0.5">
-                            {article.subtitle}
-                          </p>
-                          <p className="text-[10px] sm:text-[11px] text-slate-500 line-clamp-1 mt-0.5">
-                            {article.summary}
-                          </p>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h4 className="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-[#0e2a3a] transition-colors leading-tight">
+                                {article.title}
+                              </h4>
+                              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-md bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
+                                {article.category}
+                              </span>
+                              {hasFullText ? (
+                                <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded-md bg-emerald-100 text-emerald-800 shrink-0">
+                                  Full Article
+                                </span>
+                              ) : (
+                                <span className="text-[9px] font-medium px-1.5 py-0.2 rounded-md bg-slate-100 text-slate-400 shrink-0">
+                                  Coming Soon
+                                </span>
+                              )}
+                            </div>
+
+                            <p className="text-[11px] text-amber-700 font-semibold truncate mt-0.5">
+                              {article.subtitle}
+                            </p>
+                            <p className="text-[10px] sm:text-[11px] text-slate-500 line-clamp-1 mt-0.5">
+                              {article.summary}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Right Arrow indicator */}
+                        <div className="text-slate-400 group-hover:text-slate-900 group-hover:translate-x-0.5 transition-all shrink-0">
+                          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                         </div>
                       </div>
-
-                      {/* Right Arrow indicator */}
-                      <div className="text-slate-400 group-hover:text-slate-900 group-hover:translate-x-0.5 transition-all shrink-0">
-                        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </>

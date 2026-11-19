@@ -733,7 +733,7 @@ export default function App() {
               <button
                 onClick={() => setShowArticles(true)}
                 className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition cursor-pointer"
-                title="Read 13 cultural articles of Khasi & Jaintia"
+                title="Read 15 cultural articles of Khasi & Jaintia"
               >
                 <FileText className="w-3.5 h-3.5 text-[#f1c40f]" />
                 <span className="hidden sm:inline">Articles</span>
@@ -1551,7 +1551,7 @@ export default function App() {
         />
       )}
 
-      {/* Articles Modal (13 Cultural Articles) */}
+      {/* Articles Modal (15 Cultural Articles) */}
       {showArticles && (
         <ArticlesModal
           onClose={() => setShowArticles(false)}

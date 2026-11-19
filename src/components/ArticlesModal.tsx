@@ -20,14 +20,30 @@ interface ArticlesModalProps {
 }
 
 function parseInlineFormatting(text: string): React.ReactNode {
-  if (!text.includes('**')) return text;
-  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  const tokenRegex = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g;
+  if (!tokenRegex.test(text)) return text;
+
+  const parts = text.split(tokenRegex);
   return parts.map((part, idx) => {
     if (part.startsWith('**') && part.endsWith('**')) {
       return (
         <strong key={idx} className="font-bold text-slate-950">
           {part.slice(2, -2)}
         </strong>
+      );
+    }
+    if (part.startsWith('*') && part.endsWith('*')) {
+      return (
+        <strong key={idx} className="font-bold text-[#0e2a3a]">
+          {part.slice(1, -1)}
+        </strong>
+      );
+    }
+    if (part.startsWith('`') && part.endsWith('`')) {
+      return (
+        <code key={idx} className="px-1.5 py-0.5 rounded bg-amber-50 text-amber-950 border border-amber-200 font-semibold text-[13px]">
+          {part.slice(1, -1)}
+        </code>
       );
     }
     return part;
@@ -42,6 +58,11 @@ const ArticleContentRenderer: React.FC<{ content: string }> = ({ content }) => {
       {paragraphs.map((para, pIdx) => {
         const trimmed = para.trim();
         if (!trimmed) return null;
+
+        // Horizontal divider (---)
+        if (trimmed === '---') {
+          return <hr key={pIdx} className="border-t border-slate-200 my-4" />;
+        }
 
         // Subheadings starting with ###
         if (trimmed.startsWith('### ')) {
@@ -194,7 +215,7 @@ export const ArticlesModal: React.FC<ArticlesModalProps> = ({ onClose, onOpenCon
               >
                 <span>Articles</span>
                 <span className="px-2 py-0.2 rounded-full bg-[#f1c40f] text-slate-950 text-[10px] font-black tracking-normal">
-                  13 Cultural Topics
+                  15 Cultural Topics
                 </span>
               </h2>
               <p className="text-[11px] sm:text-xs text-amber-300 font-medium truncate">
@@ -354,7 +375,7 @@ export const ArticlesModal: React.FC<ArticlesModalProps> = ({ onClose, onOpenCon
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search among 13 articles..."
+                  placeholder="Search among 15 articles..."
                   className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-[#0e2a3a] shadow-2xs"
                 />
                 {searchQuery && (
@@ -434,7 +455,7 @@ export const ArticlesModal: React.FC<ArticlesModalProps> = ({ onClose, onOpenCon
         {/* Footer */}
         <div className="p-3.5 sm:p-4 bg-white border-t border-slate-200 flex items-center justify-between shrink-0">
           <span className="text-[11px] text-slate-500 font-medium">
-            13 Cultural Articles &bull; Khasi Jaintia Calendar
+            15 Cultural Articles &bull; Khasi Jaintia Calendar
           </span>
           <button
             onClick={onClose}

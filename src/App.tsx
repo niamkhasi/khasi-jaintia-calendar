@@ -1440,6 +1440,7 @@ export default function App() {
             setShowPaywall(false);
             setRecentPurchase(purchase);
             setSlots(billingClient.getSlots());
+            setShowAddPaidHoliday(true);
           }}
           onOpenHelpAndComplaint={() => {
             setShowPaywall(false);
@@ -1451,7 +1452,7 @@ export default function App() {
       )}
 
       {/* Purchase Success Dialog with Order ID and WhatsApp Chat Support */}
-      {recentPurchase && (
+      {recentPurchase && !showAddPaidHoliday && (
         <PurchaseSuccessModal
           purchase={recentPurchase}
           userEmail={currentUser?.email || ''}

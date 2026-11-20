@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Sparkles, HelpCircle, ShieldCheck, ArrowRight, Loader2, AlertCircle, ShoppingBag } from 'lucide-react';
+import { X, Sparkles, HelpCircle, ShieldCheck, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 import { BILLING_PRODUCTS, billingClient, PurchaseResult } from '../services/billingClient';
 
 interface PaywallModalProps {
@@ -23,19 +23,11 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
   const [purchasing, setPurchasing] = useState(false);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
 
-  const isDigitalGoods = billingClient.isDigitalGoodsAvailable();
-
   /**
-   * Buy Button Logic:
-   * Calls Digital Goods API:
-   * - service.purchase('temporary_holiday') for ₹499
-   * - service.purchase('permanent_holiday') for ₹999
-   *
-   * UNLOCK RULE:
-   * Never unlocks on button click alone.
-   * Only unlocks if payment status is verified purchased / successful.
-   * If payment fails, cancelled, or pending -> keeps LOCKED and shows "Payment Failed, Try Again".
-   * If Digital Goods API is not available (normal browser) -> shows "Please buy from Play Store App".
+   * Buy directly INSIDE app using Digital Goods API:
+   * window.getDigitalGoodsService('https://play.google.com/billing')
+   * service.purchase({ sku: selectedProduct, purchaseType: 'consumable' })
+   * then consume it and add 1 slot.
    */
   const handleBuy = async () => {
     setPurchasing(true);
@@ -50,28 +42,6 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : 'Payment Failed, Try Again';
       setPurchaseError(errorMsg);
-    } finally {
-      setPurchasing(false);
-    }
-  };
-
-  /**
-   * Razorpay Fallback (for normal browser testing if requested)
-   * Only unlocks if Razorpay payment ID is verified!
-   */
-  const handleRazorpayFallback = async () => {
-    setPurchasing(true);
-    setPurchaseError(null);
-    try {
-      const result = await billingClient.launchRazorpayFlow(selectedProduct, userEmail);
-      if (result && result.success) {
-        onPurchaseSuccess(result);
-      } else {
-        setPurchaseError('Payment Failed, Try Again');
-      }
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Payment Failed, Try Again';
-      setPurchaseError(msg);
     } finally {
       setPurchasing(false);
     }
@@ -143,43 +113,13 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
         {/* Options Body */}
         <div className="p-4 sm:p-6 overflow-y-auto space-y-4">
           
-          {/* Error / Digital Goods Info Banner */}
+          {/* Error Banner */}
           {purchaseError && (
-            <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-300 text-rose-900 text-xs font-semibold space-y-2.5 animate-in fade-in duration-200">
-              <div className="flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-                <span className="font-bold">{purchaseError}</span>
-              </div>
-              
-              {purchaseError.includes('Play Store') && (
-                <div className="p-2.5 rounded-xl bg-white/80 border border-rose-200 text-slate-700 text-[11px] space-y-2">
-                  <p>
-                    Google Play Billing v6 is active via PWABuilder TWA inside the installed Play Store App.
-                  </p>
-                  <div className="flex flex-wrap items-center gap-2 pt-0.5">
-                    <a
-                      href="https://play.google.com/store/apps/details?id=com.khasi.jaintia.calendar"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-3 py-1.5 rounded-xl bg-[#0e2a3a] text-[#f1c40f] font-bold text-[11px] inline-flex items-center gap-1.5 hover:bg-slate-800 transition shadow-xs"
-                    >
-                      <ShoppingBag className="w-3.5 h-3.5" />
-                      <span>Open in Play Store App</span>
-                    </a>
-                    <button
-                      type="button"
-                      onClick={handleRazorpayFallback}
-                      disabled={purchasing}
-                      className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] inline-flex items-center gap-1.5 transition shadow-xs cursor-pointer disabled:opacity-50"
-                    >
-                      <span>Pay with Razorpay / UPI</span>
-                    </button>
-                  </div>
-                </div>
-              )}
+            <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-300 text-rose-900 text-xs font-semibold flex items-center gap-2 animate-in fade-in duration-200">
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+              <span className="font-bold">{purchaseError}</span>
             </div>
           )}
-
           {/* Product 1: Temporary (1 Year) */}
           <div
             onClick={() => setSelectedProduct('temporary_holiday')}

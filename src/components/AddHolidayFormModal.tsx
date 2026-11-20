@@ -276,6 +276,15 @@ export const AddHolidayFormModal: React.FC<AddHolidayFormModalProps> = ({
                 </div>
               )}
 
+              {orderId && (
+                <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-950 text-xs font-semibold flex items-center gap-2 animate-in fade-in duration-200">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>
+                    Payment Successful! 1 Slot Added (Order: <strong className="font-mono text-slate-900">{orderId}</strong>). Fill in your holiday details:
+                  </span>
+                </div>
+              )}
+
               {/* Slot Type Selection */}
               <div className="space-y-1.5">
                 <label className="text-xs font-extrabold text-slate-700 block">
@@ -493,7 +502,7 @@ export const AddHolidayFormModal: React.FC<AddHolidayFormModalProps> = ({
                   <>
                     <Sparkles className="w-3.5 h-3.5 text-[#f1c40f]" />
                     <span>
-                      {isAdmin ? 'Publish to Calendar' : 'Submit for Admin Approval'}
+                      {isAdmin ? 'Publish to Calendar' : 'Add Holiday'}
                     </span>
                   </>
                 )}

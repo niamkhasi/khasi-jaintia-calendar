@@ -327,14 +327,19 @@ class PlayBillingService {
     let purchaseResponse: any = null;
 
     try {
-      // Priority 1: Direct service.purchase(productId) as requested
+      // 1. Direct service.purchase({ sku, purchaseType: 'consumable' })
       if (typeof service.purchase === 'function') {
-        purchaseResponse = await service.purchase(targetSku);
+        try {
+          purchaseResponse = await service.purchase({ sku: targetSku, purchaseType: 'consumable' });
+        } catch (callErr) {
+          // Fallback if parameter signature is single string SKU
+          purchaseResponse = await service.purchase(targetSku);
+        }
       } else if (typeof window !== 'undefined' && (window as any).PaymentRequest) {
-        // Priority 2: Standard Digital Goods PaymentRequest for Play Billing
+        // 2. Standard Digital Goods PaymentRequest for Play Billing
         const paymentMethodData = [{
           supportedMethods: 'https://play.google.com/billing',
-          data: { sku: targetSku }
+          data: { sku: targetSku, purchaseType: 'consumable' }
         }];
         const paymentDetails = {
           total: {
@@ -414,16 +419,15 @@ class PlayBillingService {
       purchaseToken = `token_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
     }
 
-    // Acknowledge + Consume via Digital Goods Service
+    // Consume via Digital Goods Service
     try {
-      if (typeof service.acknowledge === 'function') {
-        await service.acknowledge(purchaseToken, 'onetime');
-      }
       if (typeof service.consume === 'function') {
         await service.consume(purchaseToken);
+      } else if (typeof service.acknowledge === 'function') {
+        await service.acknowledge(purchaseToken, 'onetime');
       }
     } catch (err) {
-      console.warn('Acknowledge or consume notice:', err);
+      console.warn('Consumption error notice:', err);
     }
 
     // Mark token processed to prevent duplicates
@@ -443,88 +447,6 @@ class PlayBillingService {
       consumed: true,
       timestamp: new Date().toISOString()
     };
-  }
-
-  /**
-   * Browser Razorpay fallback flow if Digital Goods API is not available
-   * Only unlocks if Razorpay payment ID is verified!
-   */
-  async launchRazorpayFlow(
-    productId: 'temporary_holiday' | 'permanent_holiday',
-    userEmail: string,
-    razorpayKeyId?: string
-  ): Promise<PurchaseResult> {
-    const product = BILLING_PRODUCTS[productId];
-    const amountInPaise = product.amount * 100;
-
-    return new Promise((resolve, reject) => {
-      const loadScript = () => {
-        if ((window as any).Razorpay) return Promise.resolve();
-        return new Promise<void>((res, rej) => {
-          const script = document.createElement('script');
-          script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-          script.onload = () => res();
-          script.onerror = () => rej(new Error('Payment Failed, Try Again'));
-          document.body.appendChild(script);
-        });
-      };
-
-      loadScript()
-        .then(() => {
-          const key = razorpayKeyId || 'rzp_test_placeholder';
-          const options = {
-            key,
-            amount: amountInPaise,
-            currency: 'INR',
-            name: 'Khasi Jaintia Calendar',
-            description: `${product.title} - 1 Holiday Slot`,
-            prefill: {
-              email: userEmail || ''
-            },
-            theme: {
-              color: '#0e2a3a'
-            },
-            handler: (response: any) => {
-              if (response && response.razorpay_payment_id) {
-                // Payment strictly verified!
-                const orderId = `RP.${response.razorpay_payment_id}`;
-                const slotType = productId === 'temporary_holiday' ? 'temp' : 'perm';
-                this.addSlot(slotType);
-                this.setLastOrderId(orderId);
-                resolve({
-                  success: true,
-                  orderId,
-                  purchaseToken: response.razorpay_payment_id,
-                  productId,
-                  acknowledged: true,
-                  consumed: true,
-                  timestamp: new Date().toISOString()
-                });
-              } else {
-                reject(new Error('Payment Failed, Try Again'));
-              }
-            },
-            modal: {
-              ondismiss: () => {
-                reject(new Error('Payment Failed, Try Again'));
-              }
-            }
-          };
-
-          try {
-            const rzp = new (window as any).Razorpay(options);
-            rzp.on('payment.failed', () => {
-              reject(new Error('Payment Failed, Try Again'));
-            });
-            rzp.open();
-          } catch {
-            reject(new Error('Please buy from Play Store App'));
-          }
-        })
-        .catch(() => {
-          reject(new Error('Please buy from Play Store App'));
-        });
-    });
   }
 }
 

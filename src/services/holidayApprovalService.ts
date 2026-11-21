@@ -10,6 +10,7 @@ export interface HolidayNotification {
   type: 'temp' | 'perm';
   userName: string;
   userEmail: string;
+  userPhoto?: string;
   userId?: string;
   description?: string;
   submittedAt: string; // ISO date string
@@ -70,6 +71,7 @@ class HolidayApprovalService {
     type: 'temp' | 'perm';
     userName: string;
     userEmail: string;
+    userPhoto?: string;
     userId?: string;
     description?: string;
     submittedAt?: string;
@@ -86,6 +88,7 @@ class HolidayApprovalService {
       type: data.type,
       userName: data.userName || data.userEmail.split('@')[0],
       userEmail: data.userEmail,
+      userPhoto: data.userPhoto,
       userId: data.userId,
       description: data.description,
       submittedAt: data.submittedAt || new Date().toISOString(),
@@ -247,8 +250,9 @@ class HolidayApprovalService {
             holidayTitle: h.title,
             date: h.date,
             type: h.type,
-            userName: h.userEmail.split('@')[0],
+            userName: h.userName || h.userEmail.split('@')[0],
             userEmail: h.userEmail,
+            userPhoto: h.userPhoto,
             userId: h.userId,
             description: h.wish || h.wishKhasi || '',
             submittedAt: h.createdAt || new Date().toISOString(),

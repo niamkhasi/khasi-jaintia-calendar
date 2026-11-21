@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, ShieldCheck, Mail, CheckCircle2, CreditCard, Sparkles, AlertCircle, HeartHandshake } from 'lucide-react';
+import { X, ShieldCheck, Mail, CheckCircle2, CreditCard, Sparkles, AlertCircle, HeartHandshake, UserCheck, Lock } from 'lucide-react';
 
 interface PrivacyPolicyModalProps {
   onClose: () => void;
@@ -34,15 +34,13 @@ export const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({ onClose 
               id="privacy-policy-title"
               className="text-xl sm:text-2xl font-black font-display tracking-tight text-white"
             >
-              Privacy Policy for Khasi Jaintia Calendar
+              Privacy Policy for Khasi Jaintia Calendar App
             </h2>
             <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-amber-300 font-semibold mt-1.5">
-              <span>Effective Date: November 13, 2026</span>
-              <span>•</span>
-              <span>Last Updated: November 13, 2026</span>
+              <span>Last Updated: 21 November 2026</span>
             </div>
             <p className="text-xs text-slate-300 font-medium mt-1">
-              Developer: <strong className="text-white">Ieij Iala Ka Jong</strong>
+              Developer: <strong className="text-white">Ieij lala Ka Jong</strong>
             </p>
           </div>
         </div>
@@ -50,38 +48,93 @@ export const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({ onClose 
         {/* Scrollable Privacy Policy Content */}
         <div className="p-5 sm:p-7 overflow-y-auto space-y-4 text-slate-800 text-sm leading-relaxed bg-slate-50/70">
           
-          {/* Section 1: Information We Do NOT Collect Directly */}
+          {/* Section 1: Information We Collect */}
           <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
               <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
-                1. Information We Do NOT Collect Directly
+                1. Information We Collect
               </h3>
             </div>
             <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
-              We do NOT directly collect, store, or sell your name, email address, phone number, contacts, photos or files. We do NOT sell your personal data.
+              We do NOT directly collect, store, or sell your address, phone number, contact, photos, or files. We do NOT sell your personal data.
+            </p>
+            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
+              When you Sign-in with Google to add a Public Holiday, Google gives us your Name, Email Address, and Profile Photo. We use this ONLY to stop spam and to approve your holiday. We do NOT show your email, name, or photo to other users.
             </p>
           </div>
 
           {/* Section 2: Holiday Data You Create */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-amber-500 shrink-0" />
               <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
                 2. Holiday Data You Create
               </h3>
             </div>
-            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
-              When you add a Temporary Holiday or Permanent Holiday in Khasi Jaintia Calendar, that information is stored ONLY on your own device. We cannot see your holidays. If you clear app data or uninstall the app, your holiday data will be deleted.
-            </p>
+
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+              <h4 className="font-bold text-slate-900 text-xs sm:text-sm text-blue-900">
+                a) Public Holiday - Seen by ALL users AFTER Approval
+              </h4>
+              <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
+                When you add a Temporary Holiday or Permanent Holiday, it is PUBLIC but it will NOT show immediately. It first goes for Admin Approval. After approval, Holiday Name + Holiday Date will be shown to ALL users.
+              </p>
+              <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
+                Other users will only see: Holiday Name + Date + &quot;Public Holiday&quot;.
+              </p>
+              <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
+                We do NOT show your email to other users. If you add a wrong, fake, or bad Public Holiday, it will be rejected and deleted.
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+              <h4 className="font-bold text-slate-900 text-xs sm:text-sm text-purple-900">
+                b) Private Birthday Mark - Seen ONLY by you
+              </h4>
+              <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
+                When you add a Birthday and mark it as PRIVATE, it is stored ONLY on your own device. No other user can see it. We cannot see it. No approval needed. If you clear app data or uninstall the app, your Private Birthday will be deleted.
+              </p>
+              <p className="text-slate-700 text-xs sm:text-sm leading-relaxed font-semibold text-slate-900">
+                You do NOT need to Sign-in to add a Private Birthday.
+              </p>
+            </div>
           </div>
 
-          {/* Section 3: Payments and In-App Purchases */}
+          {/* Section 3: Google Sign-In */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+            <div className="flex items-center gap-2">
+              <UserCheck className="w-5 h-5 text-indigo-600 shrink-0" />
+              <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
+                3. Google Sign-In
+              </h3>
+            </div>
+            <ul className="space-y-1.5 pl-2 text-xs sm:text-sm text-slate-700">
+              <li className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0 mt-1.5" />
+                <span>To SEE holidays, you do NOT need to Sign-in.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0 mt-1.5" />
+                <span>To ADD a Public Holiday (Temporary or Permanent), you MUST Sign-in with Google.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0 mt-1.5" />
+                <span>All Public Holidays go for Admin Approval first. Only the Admin can see your Name and Email to approve or reject. Other users will never see it.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0 mt-1.5" />
+                <span>After approval, only Holiday Name and Date will be shown to all users. Your email is never shown to anyone.</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Section 4: Payments and In-App Purchases */}
           <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2.5">
             <div className="flex items-center gap-2">
               <CreditCard className="w-5 h-5 text-blue-600 shrink-0" />
               <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
-                3. Payments and In-App Purchases
+                4. Payments and In-App Purchases
               </h3>
             </div>
             <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
@@ -89,29 +142,29 @@ export const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({ onClose 
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
               <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800">
-                <span className="font-bold text-[#0e2a3a] block">Temporary Holiday</span>
-                <span className="text-slate-600">₹499 — 1 Slot = 1 Temporary Holiday</span>
+                <span className="font-bold text-[#0e2a3a] block">Temporary Holiday: ₹499</span>
+                <span className="text-slate-600">1 Slot = 1 Temporary Holiday</span>
               </div>
               <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800">
-                <span className="font-bold text-[#0e2a3a] block">Permanent Holiday</span>
-                <span className="text-slate-600">₹999 — 1 Slot = 1 Permanent Holiday</span>
+                <span className="font-bold text-[#0e2a3a] block">Permanent Holiday: ₹999</span>
+                <span className="text-slate-600">1 Slot = 1 Permanent Holiday</span>
               </div>
             </div>
             <p className="text-slate-700 text-xs sm:text-sm leading-relaxed pt-1">
-              All payments are processed securely by Google Play Billing. We do NOT collect, see, or store your card, UPI ID, bank account, or any payment details.
+              All payments are processed securely by Google Play Billing. We do NOT collect, see, or store your card number, Bank account, UPI PIN, or any payment details.
             </p>
           </div>
 
-          {/* Section 4: Advertising - Generic For Lifetime */}
+          {/* Section 5: Advertising - Generic For Lifetime */}
           <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
             <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
-              4. Advertising - Generic For Lifetime
+              5. Advertising - Generic For Lifetime
             </h3>
             <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
               Our app may show ads. We currently use Google AdSense / AdMob to show ads. We may change, add, or remove any advertising partner at any time in the future without changing this policy.
             </p>
             <p className="text-slate-700 text-xs sm:text-sm leading-relaxed font-semibold text-slate-900">
-              Our current and any future advertising partners may collect and use:
+              Our current and any future advertising partner may collect and use:
             </p>
             <ul className="space-y-1.5 pl-2">
               <li className="flex items-center gap-2 text-xs sm:text-sm text-slate-800 font-medium">
@@ -124,49 +177,49 @@ export const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({ onClose 
               </li>
               <li className="flex items-center gap-2 text-xs sm:text-sm text-slate-800 font-medium">
                 <span className="w-2 h-2 rounded-full bg-blue-600 shrink-0" />
-                <span>Approximate location (city level, not exact GPS)</span>
+                <span>Approximate location (City level, not exact GPS)</span>
               </li>
               <li className="flex items-center gap-2 text-xs sm:text-sm text-slate-800 font-medium">
                 <span className="w-2 h-2 rounded-full bg-blue-600 shrink-0" />
-                <span>App usage and ad interaction data to show relevant ads and prevent fraud</span>
+                <span>App usage and interaction data to show relevant ads and prevent fraud</span>
               </li>
             </ul>
             <p className="text-slate-700 text-xs sm:text-sm leading-relaxed pt-1">
               We do NOT provide your name, email, or phone number to any advertising partner.
             </p>
-            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 font-medium">
-              You can control ads anytime: <strong>Android Settings &gt; Privacy &gt; Ads &gt; Delete Advertising ID</strong>, or turn off <strong>&quot;Personalized Ads&quot;</strong>.
+            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-950 font-semibold">
+              There is NO setting inside our app to turn off ads.
             </div>
-          </div>
-
-          {/* Section 5: Third-Party Services */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
-            <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
-              5. Third-Party Services
-            </h3>
-            <ul className="space-y-1.5 pl-2 text-xs sm:text-sm text-slate-700">
-              <li className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-slate-500 shrink-0" />
-                <span><strong>Google Play Services</strong> - For in-app purchases</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-slate-500 shrink-0" />
-                <span><strong>Google and/or any other Advertising Partner</strong> - For showing ads (current or future)</span>
-              </li>
-            </ul>
+            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
+              You can limit personalized ads from your phone settings: <strong>Android Settings &gt; Privacy &gt; Ads &gt; Delete Advertising ID</strong> or turn off <strong>&quot;Personalized Ads&quot;</strong>.
+            </p>
+            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed italic">
+              This will not remove ads completely, it will only make ads less personalized.
+            </p>
           </div>
 
           {/* Section 6: Data Safety */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2.5">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+              <Lock className="w-5 h-5 text-emerald-600 shrink-0" />
               <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
                 6. Data Safety
               </h3>
             </div>
-            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
-              <strong>Data collected by us:</strong> None. <strong>Data collected by advertising partners:</strong> Device ID, Advertising ID, approximate location, app interaction - for ads only. <strong>Data stored by us:</strong> Only on your device.
-            </p>
+            <ul className="space-y-2 text-xs sm:text-sm text-slate-700">
+              <li className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                <strong className="text-slate-900 block mb-0.5">Data collected by us:</strong>
+                <span>Name, Email - ONLY when you Sign-in with Google to add a Public Holiday. Used only for approval and to stop spam.</span>
+              </li>
+              <li className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                <strong className="text-slate-900 block mb-0.5">Data collected by advertising partner:</strong>
+                <span>Device ID, Advertising ID, Approximate location - for ads only.</span>
+              </li>
+              <li className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                <strong className="text-slate-900 block mb-0.5">Data stored by us:</strong>
+                <span>Approved Public Holidays are stored on our server / database (for example Firebase) so all users can see them. Private Birthdays Mark are stored only on your device. Pending holidays are stored on server only until Admin approves or rejects.</span>
+              </li>
+            </ul>
           </div>
 
           {/* Section 7: Children's Privacy */}
@@ -187,21 +240,35 @@ export const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({ onClose 
             <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
               8. Your Rights
             </h3>
-            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
-              You can delete your holiday data anytime by clearing app data or uninstalling the app. You can opt-out of personalized ads from device settings.
-            </p>
+            <ul className="space-y-1.5 pl-2 text-xs sm:text-sm text-slate-700">
+              <li className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-600 shrink-0 mt-1.5" />
+                <span>You can delete your Private Birthday anytime through delete Button or by clearing app data or uninstalling the app.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-600 shrink-0 mt-1.5" />
+                <span>You can ask us to remove your Public Holiday or delete your Sign-in data by contacting us.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-600 shrink-0 mt-1.5" />
+                <span>You can opt-out of personalized ads from device settings as explained in Section 5.</span>
+              </li>
+            </ul>
           </div>
 
-          {/* Section 9: Changes to This Policy */}
+          {/* Section 9: Changes To This Policy */}
           <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
             <div className="flex items-center gap-2">
               <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
               <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
-                9. Changes to This Policy
+                9. Changes To This Policy
               </h3>
             </div>
             <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
               If we change our advertising partner in future, this policy will still apply because it is generic and covers any current or future partner.
+            </p>
+            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
+              If we change anything else, we will update the &quot;Last Updated&quot; date at the top.
             </p>
           </div>
 
@@ -227,7 +294,7 @@ export const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({ onClose 
               </p>
               <p>
                 <span>Developer: </span>
-                <strong className="text-slate-900">Ieij Iala Ka Jong</strong>
+                <strong className="text-slate-900">Ieij lala Ka Jong</strong>
               </p>
             </div>
           </div>
@@ -255,3 +322,4 @@ export const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({ onClose 
     </div>
   );
 };
+

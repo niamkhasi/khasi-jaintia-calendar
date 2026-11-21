@@ -290,9 +290,9 @@ export const HolidaysModal: React.FC<HolidaysModalProps> = ({
                         )}
                       </h4>
 
-                      {item.userEmail && !item.name.toLowerCase().includes('soul') && !ADMIN_EMAILS.some(a => a.toLowerCase() === item.userEmail?.toLowerCase()) && (
-                        <div className="text-[11px] text-slate-500 mt-0.5 font-medium">
-                          By: {item.userEmail}
+                      {isAdmin && item.userEmail && !item.name.toLowerCase().includes('soul') && !ADMIN_EMAILS.some(a => a.toLowerCase() === item.userEmail?.toLowerCase()) && (
+                        <div className="text-[10px] text-slate-400 mt-0.5 font-medium">
+                          (Admin view: Added by {item.userEmail})
                           {item.expiryDate && item.badge === '1Y' && (
                             <span className="ml-1 text-amber-900">(until {item.expiryDate})</span>
                           )}

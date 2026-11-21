@@ -26,6 +26,16 @@
           "maxLength": 128,
           "description": "Email of the user who purchased and added this holiday"
         },
+        "userName": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Optional display name of the creator"
+        },
+        "userPhoto": {
+          "type": "string",
+          "maxLength": 1024,
+          "description": "Optional Google profile photo URL of the creator"
+        },
         "userId": {
           "type": "string",
           "maxLength": 128,

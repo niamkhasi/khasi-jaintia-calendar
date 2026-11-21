@@ -38,6 +38,8 @@ export interface AllHolidayItem {
   date: string; // YYYY-MM-DD
   type: 'temp' | 'perm';
   userEmail: string;
+  userName?: string;
+  userPhoto?: string;
   userId?: string;
   createdAt: string;
   status: 'active' | 'pending' | 'approved' | 'denied' | 'expired' | 'deleted';

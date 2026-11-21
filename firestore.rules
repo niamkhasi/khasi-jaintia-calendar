@@ -50,6 +50,8 @@ service cloud.firestore {
              data.type is string && (data.type == 'temp' || data.type == 'perm') &&
              data.userEmail is string && data.userEmail.size() > 0 && data.userEmail.size() <= 128 &&
              data.status is string && (data.status == 'active' || data.status == 'pending' || data.status == 'approved' || data.status == 'denied' || data.status == 'expired' || data.status == 'deleted') &&
+             (!('userName' in data) || (data.userName is string && data.userName.size() <= 128)) &&
+             (!('userPhoto' in data) || (data.userPhoto is string && data.userPhoto.size() <= 1024)) &&
              (!('expiryDate' in data) || (data.expiryDate is string && data.expiryDate.size() <= 64)) &&
              (!('userId' in data) || (data.userId is string && data.userId.size() <= 128)) &&
              (!('orderId' in data) || (data.orderId is string && data.orderId.size() <= 128)) &&

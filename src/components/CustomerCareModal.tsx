@@ -419,10 +419,29 @@ export const CustomerCareModal: React.FC<CustomerCareModalProps> = ({
                         </div>
 
                         {/* Submitter info & Description */}
-                        <div className="text-[11px] text-slate-300 space-y-1 bg-black/20 p-2.5 rounded-lg border border-white/5">
-                          <div className="flex items-center gap-1.5">
-                            <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span>Submitted by: <strong className="text-white">{notif.userName}</strong> ({notif.userEmail})</span>
+                        <div className="text-[11px] text-slate-300 space-y-1.5 bg-black/25 p-2.5 rounded-lg border border-white/10">
+                          <div className="flex items-center gap-2">
+                            {notif.userPhoto ? (
+                              <img
+                                src={notif.userPhoto}
+                                alt={notif.userName}
+                                className="w-7 h-7 rounded-full object-cover border border-amber-400/50 shrink-0 shadow-xs"
+                                referrerPolicy="no-referrer"
+                              />
+                            ) : (
+                              <div className="w-7 h-7 rounded-full bg-amber-500/20 text-amber-300 font-black flex items-center justify-center text-xs shrink-0 border border-amber-400/30">
+                                {notif.userName ? notif.userName[0].toUpperCase() : 'U'}
+                              </div>
+                            )}
+                            <div className="min-w-0 flex-1 leading-tight">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="text-white font-bold text-xs">{notif.userName}</span>
+                                <span className="text-[10px] px-1.5 py-0.2 rounded bg-white/10 text-amber-300 font-semibold">Google Account</span>
+                              </div>
+                              <div className="text-slate-400 text-[10.5px] font-mono mt-0.5 break-all">
+                                {notif.userEmail}
+                              </div>
+                            </div>
                           </div>
 
                           {notif.description && (
@@ -668,7 +687,7 @@ export const CustomerCareModal: React.FC<CustomerCareModalProps> = ({
                     {allHolidays.length > 0 ? (
                       allHolidays.map((h) => (
                         <option key={h.id} value={h.id}>
-                          {h.title} ({h.date}) - {h.userEmail}
+                          {h.title} ({h.date}){isAdmin ? ` - ${h.userEmail}` : ''}
                         </option>
                       ))
                     ) : (

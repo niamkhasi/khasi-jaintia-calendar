@@ -381,9 +381,9 @@ export const DayModal: React.FC<DayModalProps> = ({
                             </div>
                           </div>
 
-                          {h.userEmail && !h.name.toLowerCase().includes('soul') && !ADMIN_EMAILS.some(a => a.toLowerCase() === h.userEmail?.toLowerCase()) && (
-                            <div className="text-[11px] text-slate-600 font-medium">
-                              Published by: <strong>{h.userEmail}</strong>
+                          {isAdmin && h.userEmail && !h.name.toLowerCase().includes('soul') && !ADMIN_EMAILS.some(a => a.toLowerCase() === h.userEmail?.toLowerCase()) && (
+                            <div className="text-[10px] text-slate-500 font-medium">
+                              (Admin view: Added by {h.userEmail})
                               {h.expiryDate && h.badge === '1Y' && (
                                 <span className="ml-2 text-amber-900">(Valid until {h.expiryDate})</span>
                               )}

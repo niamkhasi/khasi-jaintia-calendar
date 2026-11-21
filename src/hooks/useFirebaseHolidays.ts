@@ -533,6 +533,8 @@ export function useFirebaseHolidays() {
       date,
       type,
       userEmail: currentUser.email,
+      userName: currentUser.displayName || currentUser.email.split('@')[0],
+      userPhoto: currentUser.photoURL || undefined,
       userId: currentUser.uid,
       createdAt: new Date().toISOString(),
       status: initialStatus,
@@ -560,6 +562,7 @@ export function useFirebaseHolidays() {
           type,
           userName: currentUser.displayName || currentUser.email.split('@')[0],
           userEmail: currentUser.email,
+          userPhoto: currentUser.photoURL || undefined,
           userId: currentUser.uid,
           description: trimmedWish || undefined,
           submittedAt: newRecord.createdAt

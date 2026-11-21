@@ -60,7 +60,7 @@ export const AboutUsModal: React.FC<AboutUsModalProps> = ({ onClose, onOpenConta
           {/* Story & Background */}
           <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
             <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
-              I made Khasi Jaintia Calendar because normal calendars on phone do not show our eight Market days and festivals date like Shad Suk Mynsiem, Behdeiñkhlam, and Seng Kut Snem, because we fix these festivals date through eight market days not by english days.
+              I made Khasi Jaintia Calendar because normal calendars on phone do not show our eight Market days and festivals date like Shad Suk Mynsiem, Behdeiñkhlam, and Shad Nongkrem, because we fix these festivals date through eight market days not by english days.
             </p>
             <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
               Many of our elders do not understand English calendar properly, and many young people forget our eight market days now a days.

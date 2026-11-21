@@ -208,7 +208,7 @@ export const SNGI_IEW_GUIDE_DATA: SngiIewGuideDay[] = [
         regionKey: 'sepngi',
         regionName: 'Ha Ri Lum Sepngi',
         chipLabel: 'Sepngi',
-        markets: ['Nongdum']
+        markets: ['Nongum']
       }
     ]
   },

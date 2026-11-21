@@ -267,7 +267,9 @@ Share this article so our children will never forget - we started from seven hut
     subtitle: 'Seven Raij, One Prayer: To Drive Away Plague',
     summary: 'The grand ritual festival of the Pnar people to drive away evil plagues and invoke bumper harvest and well-being.',
     heading: 'Behdeiñkhlam',
-    content: `In Jaintia Hills, we have SEVEN Behdeiñkhlam. Seven Raij. Seven villages. All celebrate Behdeiñkhlam in their own place, in their own way.
+    content: `In Jaintia Hills, we have SEVEN Behdeiñkhlam. Seven Raij. All celebrate Behdeiñkhlam in their own place, in their own way.
+
+Please remember: A Raij is not just one village. Inside each Raij, there are many villages included — some Raij have 5 to 10 villages, and some have up to 30 villages, like Raij Tuber, which is a very big Raij in Jaintia Hills.
 
 They are:
 
@@ -323,13 +325,13 @@ That is why in Khasi Jaintia Calendar, you will see seven different dates for Be
 
 ### Why You Must Remember The Seven?
 
-Many outsider think Behdeiñkhlam is only one in one place in Jaintia Hills. They don't know there are seven.
+Many outsiders think Behdeiñkhlam is only in one place in Jaintia Hills. They don't know there are seven Raij, and inside each Raij there are many villages — some Raij have 5 to 10 villages, and Raij Tuber is very big with up to 30 villages.
 
 So remember this list:
 
 Chyrmang, Jowai, Tuber, Ialong, Muthlong, Mukhla, Sohkymphor.
 
-Seven Behdeiñkhlam. Seven Raij. Seven Place in Jaintia.
+Seven Behdeiñkhlam. Seven Raij in Jaintia Hills.
 
 And to know the exact date of each Raij this year, check Khasi Jaintia Calendar. We put all seven dates based on market days, not English date.
 
@@ -413,27 +415,7 @@ Both protect our land from outsiders.
 
 That is why we say: Khasi and Jaintia are one people. We have two names for our kings, but one heart.
 
-### Why We Must Remember Them?
-
-Today, our young generation knows the name of Chief Minister, Prime Minister, but they don't know the name of their own Daloi, their own Syiem.
-
-That is wrong.
-
-If we forget our Daloi and Syiem, we forget who we are. We forget that we were once free kings, not slaves.
-
-So remember this:
-
-Before British came - Jaintia Hills 12 Daloi, Khasi Hills 30 Syiem.
-Today - The number has increased through JHADC and KHADC, but the tradition is same.
-
-If you are from Jaintia, find out who is your Daloi. Go and respect him.
-If you are from Khasi, find out who is your Syiem. Go and respect him.
-
-They are our real leaders.
-
-And to know when your Daloi or Syiem has a festival, check Khasi Jaintia Calendar. We put all festival dates based on market days.
-
-Share this article so our children will know - we have our own kings, before British and till today.`
+Share this article so our people and outsiders also will know the truth.`
   },
   {
     id: 6,
@@ -452,7 +434,7 @@ According to our tribe rule, when we get married, it is not the girl who goes to
 
 The boy leaves his mother's house and comes to live in the girl's house. He becomes part of the girl's family. He makes a new family in the girl's home.
 
-We call this "Shong Kur" - To live in the wife's family.
+We call this "Shong Kha" - To live in the wife's family.
 
 The boy does not take the girl away. The boy comes to the girl.
 
@@ -466,7 +448,7 @@ This is not weakness. This is respect. We respect the mother as the root of the 
 
 And when we have a child, the child takes the girl's last name, not the boy's last name.
 
-For example, if the mother is from Lyngdoh clan, and the father is from Kharumnuid clan, the child will be Lyngdoh. Not Kharumnuid.
+For example, if the mother is from Phawa clan, and the father is from Dkhar clan, the child will be Phawa. Not Dkhar.
 
 The child belongs to the mother's clan - Ka Kur.
 
@@ -791,11 +773,18 @@ It is a time to forgive old grudges, renew friendships, and pray for timely rain
 
 ### What Happens In Shad Sukra?
 
-Organized by Sein Raij across Jowai and various villages in Jaintia Hills, Shad Sukra is a breathtaking display of color, rhythm, and unity:
-- Both men and women take part in traditional Pnar dress.
-- Women wear elegant Muga silk, silver necklaces, and traditional ornaments.
-- Men wear traditional dhotis, colorful jackets, turbans, and carry traditional ornaments.
-- Dancers move to the rhythmic beats of traditional drums, pipes, and flutes, dancing through the streets and at sacred grounds.
+Organized by Sein Raij across Jowai and various villages in Jaintia Hills, Shad Sukra is a sacred display of tradition, rhythm, and unity.
+
+This is same like Shad Suk Mynsiem: all the boys and girls who participate in the dance have to wear traditional dress only (only the crowd can wear whatever they want).
+
+In Shad Sukra, the sacred traditional attire worn by the dancers includes:
+- **Spong ka pali** (traditional turban)
+- **Ryndia Muka** and **Thoh saru**
+- **Jaiñ sem** and **Boh**
+- **U kpieng u poila** (traditional coral and bead necklaces)
+- **Ka ksiar ka rupa** (traditional gold and silver ornaments)
+
+Dancers move to the rhythmic beats of traditional drums, pipes, and flutes, dancing through the streets and at sacred grounds with deep reverence.
 
 There are ritual blessings, cultural songs, and joyful feasting.
 
@@ -809,18 +798,12 @@ We are proud of our Pnar traditions. Share this article so our culture lives on 
     id: 12,
     title: 'U Tirot Sing Syiem',
     category: 'Freedom Fighters & Heroes',
-    subtitle: 'He Chose Death Instead Of Being A Slave',
-    summary: 'The brave Syiem of Nongkhlaw who led the 1829–1833 Anglo-Khasi War and chose death over becoming a slave to British rule.',
+    subtitle: 'The first Khasi Freedom fighter who refused to bow to the British Empire',
+    summary: 'The fearless Syiem of Nongkhlaw who led the Anglo-Khasi War (1829–1833) and chose death over becoming a slave to the British Empire.',
     heading: 'U Tirot Sing Syiem - He Chose Death Instead Of Being A Slave',
-    content: `When India talks about freedom fighters, they talk about Bhagat Singh, Mahatma Gandhi, Subhas Chandra Bose.
+    content: `His story is very simple, but very powerful:
 
-But we, Khasi Jaintia people, we have our own freedom fighter. His name is U Tirot Sing Syiem.
-
-He was the freedom fighter of Khasi during British time.
-
-And his story is very simple, but very powerful:
-
-He chose death instead of being a slave in British rule for his people.
+He chose death instead of being a slave under British rule for his people.
 
 ### Who Was U Tirot Sing?
 
@@ -828,35 +811,41 @@ U Tirot Sing was the Syiem of Nongkhlaw. Nongkhlaw is a Hima in West Khasi Hills
 
 He was a brave Syiem. He loved his people. He loved his land. He did not want any outsider to rule our hills.
 
-In those days, the British wanted to make a road through our Khasi Hills, from Guwahati to Sylhet. They wanted to control our land for their business.
+In those days, after the Treaty of Yandaboo in 1826, the British wanted to make a road through our Khasi Hills, from Guwahati to Sylhet. They wanted to control our land for their trade and their empire.
 
-First, U Tirot Sing tried to be friendly with the British. He allowed them. But soon he understood - the British did not want only road. They wanted to take our land, our Hima, our freedom. They wanted to make us slaves in our own land.
+The British Agent, David Scott, came to Nongkhlaw. He asked U Tirot Sing for permission to build the road. In return, he promised to give back the Bardwar region to Nongkhlaw.
+
+At first, U Tirot Sing tried to be friendly with the British. He allowed them. But soon he understood the truth - the British did not want only a road. They wanted to take our land, our Hima, our freedom. They wanted to make us slaves in our own land.
+
+They built a garrison, a military camp, at Nongkhlaw and brought more soldiers. It was not trade. It was occupation.
 
 So he said, "No. This is our land. No one can take it. No one can make us slaves."
 
 ### Why Did He Fight?
 
 U Tirot Sing fought because:
-- He did not want British to rule Khasi Hills
+- He did not want the British to rule Khasi Hills
 - He did not want to lose our Hima and our Syiem system
-- He did not want to lose our culture and our Niam
+- He did not want to lose our culture and our Religion (Ka Niam Ka Rukom)
 - He did not want his people to become slaves under British rule
 
-On 4th April 1829, U Tirot Sing and his warriors attacked the British at Nongkhlaw. This was the start of the Anglo-Khasi War.
+On 4th April 1829, U Tirot Sing and his warriors attacked the British garrison at Nongkhlaw. This was the start of the Anglo-Khasi War.
 
-For almost 4 years, from 1829 to 1833, U Tirot Sing fought in the hills, in the forests, in the caves. The British had guns. We had only swords, bows, arrows. But still, our warriors did not give up.
+For almost 4 years, from 1829 to 1833, U Tirot Sing fought in the hills, in the forests, in the caves. The British had guns. We had only swords, bows and arrows. But still, our warriors did not give up.
 
-He hid in the hills. He fought like a tiger. The British could not catch him easily because our people loved him and protected him.
+He hid in the hills. He fought like a tiger. He used guerrilla war - attack at night and disappear in the morning. The British could not catch him easily because our people loved him and protected him. Even women joined the uprising.
 
 ### He Chose Death Instead Of Being A Slave
 
-In 1833, the British finally caught U Tirot Sing. They took him to Dhaka. They put him in jail.
+In January 1833, the British finally caught U Tirot Sing. They called him for peace talks, for negotiation. It was a trap.
 
-The British told him, "Say sorry. Accept British rule. Become our slave. Then we will leave you."
+They took him to Dhaka. They put him in jail.
+
+The British told him, "Accept British rule. We will make you the Syiem of Nongkhlaw again. You will live as our king."
 
 But U Tirot Sing said NO.
 
-He said, "I would rather die than live as a slave under British rule."
+He said, "I would rather die as an imprisoned king than live as an enslaved ruler."
 
 And that is what he did. He chose death instead of being a slave for his people.
 
@@ -871,28 +860,30 @@ Today, 17th July is U Tirot Sing Day. It is a holiday in Meghalaya. Every year, 
 We remember him because:
 - He was the first Khasi to fight for freedom
 - He showed us to love our land
-- He showed us not to fear even if enemy is bigger
+- He showed us not to fear even if the enemy is bigger
 - He showed us that Hynniew Trep never bows down
 - He showed us that death is better than slavery
+
+He was the first tribal king of the Khasis to resist the British, and the last king to rule Hima Nongkhlaw.
 
 If U Tirot Sing did not fight, today we would have lost our identity much earlier.
 
 So when your children ask, "Who is U Tirot Sing?"
-Tell them: "He is our first freedom fighter. He is our Syiem. During British time, he chose death instead of being a slave in British rule for his people."
+Tell them: "He is our first freedom fighter. He is our Syiem. During British time, he chose death instead of being a slave under British rule for his people."
 
 We are proud to be Hynniew Trep because we had a hero like U Tirot Sing Syiem.
 
-Share this article so no Khasi Jaintia child will ever forget - U Tirot Sing chose death, not slavery.`
+Share this article so no Khasi-Jaintia child will ever forget - U Tirot Sing chose death, not slavery.`
   },
   {
     id: 13,
     title: 'U Kiang Nangbah',
     category: 'Freedom Fighters & Heroes',
-    subtitle: 'The Freedom Fighter Of Jaintia Who Became A Prophet',
-    summary: 'The heroic Jaintia leader from Jowai who resisted unjust British taxes, united the 12 Dalois, and prophesied India’s freedom on the gallows.',
+    subtitle: 'A common farmer who said - "Natives do not pay taxes to foreigners"',
+    summary: 'The heroic Jaintia leader from Jowai who united the 12 Dalois, resisted British taxation, and prophesied India’s freedom on the gallows.',
     heading: 'U Kiang Nangbah - The Freedom Fighter Of Jaintia Who Became A Prophet',
-    content: `When we talk about Khasi freedom fighter, we talk about U Tirot Sing Syiem.
-When we talk about Jaintia freedom fighter, we talk about U Kiang Nangbah.
+    content: `When we talk about the Khasi freedom fighter, we talk about U Tirot Sing Syiem.
+When we talk about the Jaintia freedom fighter, we talk about U Kiang Nangbah.
 
 He was the freedom fighter of Jaintia during British time. He was not a king. He was not a Syiem. He was a common farmer. But he became the leader of the whole Jaintia Hills.
 
@@ -902,22 +893,22 @@ And like U Tirot Sing, he also chose death instead of being a slave under Britis
 
 U Kiang Nangbah was born to Ka Rimai Nangbah at Tpeppale in Jowai, in West Jaintia Hills. He belonged to the Sookpoh clan.
 
-The exact date of his birth is not known. But we know he was a child when the British annexed the Jaintia Kingdom in 1835. The last Jaintia king lost his kingdom.
+The exact date of his birth is not known. But we know he was a child when the British annexed the Jaintia Kingdom in 1835. The last Jaintia king, Raja Rajendra Sing, lost his kingdom.
 
-Unlike U Tirot Sing, U Kiang Nangbah had no royal background. He was not from a king family. He was a simple farmer. As a young man, he worked in agriculture, he loved to play flute, and he was very good in traditional sports like archery and Ka Rah Mookhrah (traditional weightlifting).
+Unlike U Tirot Sing, U Kiang Nangbah had no royal background. He was not from a king family. He was a simple farmer. As a young man, he worked in agriculture, he loved to play the flute, and he was very good in traditional sports like archery and Ka Rah Mookhrah, traditional weightlifting.
 
 As a child, his mother told him the story of his uncle, U Ksan Sajar Nangbah, who died fighting the British. That story made him hate British rule from a very young age.
 
 ### Why Did He Fight The British?
 
-After annexing Jaintia Kingdom in 1835, for more than 20 years the British did not interfere much. They left Jaintia people almost alone.
+After annexing the Jaintia Kingdom in 1835, for more than 20 years the British did not interfere much. They left Jaintia people almost alone.
 
 But in 1860, the British imposed House Tax and Income Tax on Jaintia people. They also interfered in our customs and our Niamtre religion, including our cremation practice.
 
 In a Dorbar at Mynkoi Pyrdi, Manik Pakyntein, also called Daloi Tyngkaen, announced this House Tax.
 
 U Kiang Nangbah stood up in that Dorbar and said in clear words:
-"Natives do not pay taxes to foreigners."
+*"Natives do not pay taxes to foreigners."*
 
 That means: "We are the owners of this land. Why should we pay tax to foreigners?"
 
@@ -929,7 +920,7 @@ Soon after, when British officers ransacked the house of Lakhi Pirdiang at Chill
 
 The 12 Dalois of Jaintia Hills gathered at Madiah Kmai Blai, beside the Syntu Ksiar river.
 
-There, according to oral tradition (Parom), a test was given: Whoever could bring the Phlang Letang plant from the depths of the river would lead the movement.
+There, according to oral tradition, Parom, a test was given: Whoever could bring the Phlang Letang plant from the depths of the river would lead the movement.
 
 U Kiang Nangbah dived into the river and came out with a living plant with three leaves. The whole Dorbar accepted him as leader. He was garlanded with shield and armour by the Daloi of Nartiang.
 
@@ -946,6 +937,8 @@ Under his leadership, Jaintia people:
 - Fought at Padu, Satpator, Jowai, Nangbah, Mynsoo, Nartiang, Shangpung, Raliang, Sutnga, Nongkhlieh, and many other places
 
 The war lasted for almost one full year, from January 1862 to December 1862. It was the worst period in the history of Jaintia Hills.
+
+The rebellion was so strong, the British had to call 7 army regiments to stop it. For 3 weeks, the rebels laid siege to Jowai.
 
 ### He Chose Death Instead Of Being A Slave
 
